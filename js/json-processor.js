@@ -295,10 +295,10 @@ function updateDisplay(rowIndex) {
     commentsBox.innerHTML = '';
   
     if (!row.generatedComment) return;
-  
+
     const p = document.createElement('p');
     p.className = 'generated-comment';
-  
+
     // Appliquer style Succès/Échec si Shoot
     if (row['commentaire-Situation'] === 'Shoot') {
       const res = row['commentaire-Succes'];

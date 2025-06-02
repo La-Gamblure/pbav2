@@ -408,9 +408,13 @@
   /* === scroll bar === */
   .stats-container::-webkit-scrollbar { width:8px; }
   .stats-container::-webkit-scrollbar-thumb {
-    background:#64ffda;
-    border-radius:4px;
-  }
+    background: transparent !important;
+    border-radius: 4px;
+}
+
+.stats-container::-webkit-scrollbar {
+    background: transparent !important;
+}
 
 .team-a-table{
     border: 4px solid var(--team-a-secondary);

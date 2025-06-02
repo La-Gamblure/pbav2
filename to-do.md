@@ -8,3 +8,7 @@ II : Voici la dernière étape de conversion en JSON. Il y avait une étape de d
  III : transition Quarter
 
  IV : rapport de match
+
+
+
+J'aimerais recevoir en fin de match, dans la partie commentaire, un lien qui redirige vers un document qui détaille les stats du match, à savoir le nombre de tentatives de shoot, le nombre de tentatives réussies à 2 points, à 3 points, Idem pour les rebonds, les assists, les styles, les blocs.  En sachant que les scores qui sont affichés dans le JSON ne sont pas des scores en occurrence,  c'est des scores en fantasy points.  Un rebond par exemple ça vaut 1,2 points.  Une assist c'est 1,5 points.  Et bloc et style valent 3 points chacun. Par exemple, pour les points, j'aimerais savoir le nombre de shoots du joueur, qu'il va falloir  incrémenter à chaque fois qu'il fait une tentative, qu'elle soit réussie ou pas.  Après, nombre de shoots réussis et en différenciant les shoots à 2 points et à 3 points.  Pour les rebonds, je veux le nombre de rebonds effectués, donc c'est facile, il suffit  de diviser le score fantasy qui est affiché par 1,2.  Pareil pour les assists sauf qu'il faut diviser par 1,5.  Pareil pour les blocs, mais il faut diviser par 3.  Pareil pour les steals, mais il faut diviser par 3. J'aimerais aussi avoir le détail de ces stats mais par carton, Q1, Q2, Q3 et Q4.  Et j'aimerais aussi avoir le score global des 10 joueurs représenté sur un graphique avec les 10 graphiques individuels qui évoluent au fur et à mesure des actions du match.
