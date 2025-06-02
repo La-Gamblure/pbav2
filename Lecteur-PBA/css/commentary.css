@@ -1,0 +1,151 @@
+/* =============================
+   1. Conteneur général
+   ============================= */
+   .commentary-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;   /* une ligne <p> sous l'autre */
+    gap: 1rem;                /* espace entre les commentaires */
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* =============================
+   2. Bloc de commentaire
+   ============================= */
+.generated-comment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1a1a1a;
+    color: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 1.9rem;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    opacity: 1;
+}
+.generated-comment.shoot-success {
+    border-left: 4px solid #00ff00;  /* Vert pur plus brillant */
+    background: linear-gradient(90deg, rgba(0,255,0,0.15), rgba(0,255,0,0.25));
+    animation: successGlow 0.3s ease-in-out infinite alternate;
+}
+
+.generated-comment.shoot-failure {
+    border-left: 4px solid #ff0000;  /* Rouge pur plus vif */
+    background: linear-gradient(90deg, rgba(255,0,0,0.15), rgba(255,0,0,0.25));
+    animation: failureGlow 0.3s ease-in-out infinite alternate;
+}
+
+/* Animation rapide pour un effet de flash */
+@keyframes successGlow {
+    0% {
+        box-shadow: 0 0 2px rgba(0,255,0,0.2);
+        border-left-width: 4px;
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(0,255,0,0.8);
+        border-left-width: 6px;
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(0,255,0,0.3);
+        border-left-width: 4px;
+    }
+}
+
+@keyframes failureGlow {
+    0% {
+        box-shadow: 0 0 2px rgba(255,0,0,0.2);
+        border-left-width: 4px;
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255,0,0,0.8);
+        border-left-width: 6px;
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255,0,0,0.3);
+        border-left-width: 4px;
+    }
+}
+
+/* =============================
+   5. Style des noms de joueurs dans les commentaires
+   ============================= */
+.comment-player {
+    padding: 4px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+    margin: 4px;
+    /* Pas de bordure générique ici */
+}
+
+.comment-player.team-A {
+    background-color: var(--team-a-primary);   /* utilisation de la variable CSS */
+    color: var(--team-a-secondary);
+    border: 2px solid var(--team-a-secondary);
+}
+
+.comment-player.team-B {
+    background-color: var(--team-b-primary);   /* utilisation de la variable CSS */
+    color: var(--team-b-secondary);
+    border: 2px solid var(--team-b-secondary);
+}
+
+/* Style pour les noms d'équipes dans les commentaires */
+.teamtag {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 700;
+    margin: 0 4px;
+    display: inline-block;
+    border: 6px solid;
+}
+
+/* Pour l'équipe A */
+.generated-comment:has(.team-A) .teamtag {
+    background-color: var(--team-a-primary);
+    color: var(--team-a-secondary);
+    border-color: var(--team-a-secondary);
+}
+
+/* Pour l'équipe B */
+.generated-comment:has(.team-B) .teamtag {
+    background-color: var(--team-b-primary);
+    color: var(--team-b-secondary);
+    border-color: var(--team-b-secondary);
+}
+
+/* Badge de base amélioré */
+.block {
+    background: linear-gradient(135deg, #1d47c7, #4c36b9);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    padding: 0.1em 0.1em;
+    border-radius: 15px;
+    margin: 4px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(255,0,0,0.3);
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.3);
+    animation: blockAnimation 0.5s infinite alternate;
+}
+
+.points {
+    background: linear-gradient(135deg, #198c19, #33ff33);
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    padding: 0.1em 0.1em;
+    border-radius: 15px;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0,255,0,0.3);
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    margin: 4px;
+    border: 1px solid rgba(255,255,255,0.3);
+    animation: pointsAnimation 0.5s infinite alternate;
+}
+

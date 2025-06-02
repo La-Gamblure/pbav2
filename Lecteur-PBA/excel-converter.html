@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PBA Excel → JSON Converter</title>
+    <!-- <link rel="stylesheet" href="css/file-upload.css"> --> <!-- Fichier absent -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1, h2 {
+            color: #61dafb;
+            margin-top: 0;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 5px;
+        }
+        
+        .step h2 {
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .btn, .file-upload-btn {
+            background-color: #61dafb;
+            color: #111;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+        
+        .btn:hover, .file-upload-btn:hover {
+            background-color: #4fa8d1;
+        }
+        
+        .btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+        
+        #conversion-log {
+            background-color: #1e1e1e;
+            color: #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            margin-bottom: 20px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 3px 5px;
+            border-left: 3px solid #555;
+        }
+        
+        .log-info {
+            border-left-color: #61dafb;
+        }
+        
+        .log-warning {
+            border-left-color: #e6c07b;
+        }
+        
+        .log-error {
+            border-left-color: #e06c75;
+        }
+        
+        .log-success {
+            border-left-color: #98c379;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #preview-json {
+            width: 100%;
+            height: 300px;
+            background-color: #1e1e1e;
+            color: #ddd;
+            font-family: monospace;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            resize: vertical;
+            white-space: pre;
+            overflow: auto;
+        }
+        
+        a.link {
+            color: #61dafb;
+            text-decoration: none;
+        }
+        
+        a.link:hover {
+            text-decoration: underline;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .navbar h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+        
+        .navbar a {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #333;
+            color: #61dafb;
+            text-decoration: none;
+            margin-left: 15px;
+            border-radius: 4px;
+            border: 2px solid #61dafb;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar a:hover {
+            background-color: #61dafb;
+            color: #111;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(97, 218, 251, 0.3);
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            position: relative;
+            height: 320px;
+            overflow: hidden;
+        }
+        
+        .main-logo {
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .mystery-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+             
+        .mystery-text {
+            color: #61dafb;
+            font-size: 1.2rem;
+            margin-top: 15px;
+            text-shadow: 0 0 10px rgba(97, 218, 251, 0.8);
+            font-weight: bold;
+            letter-spacing: 2px;
+            opacity: 0.9;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes pulse-light {
+            0% { filter: drop-shadow(0 0 15px rgba(97, 218, 251, 0.7)); }
+            50% { filter: drop-shadow(0 0 25px rgba(97, 218, 251, 1)); }
+            100% { filter: drop-shadow(0 0 15px rgba(97, 218, 251, 0.7)); }
+        }
+        
+        /* Overlay pour le fond sombre lors de l'agrandissement */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 998;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Logo agrandit au centre */
+        #bigLogo {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(3.5) rotate(360deg);
+            width: 300px;
+            height: 300px;
+            z-index: 999;
+            filter: drop-shadow(0 0 25px rgba(97, 218, 251, 1)) brightness(1.2);
+            animation: pulse 1.5s infinite;
+        }
+        
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+
+               
+        <div class="navbar">
+            <h1>PBA Excel → JSON Converter</h1>
+            <div>
+                <a href="/index.html">Retour au lecteur PBA</a>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2>Étape 1: Sélectionner un fichier Excel</h2>
+            <p>Choisissez un fichier Excel (.xlsx) contenant les données de match PBA.</p>
+            
+            <div class="file-upload-container">
+                <input type="file" id="excel-upload" accept=".xlsx" hidden />
+                <label for="excel-upload" class="file-upload-btn">Choisir un fichier Excel</label>
+                <span id="file-name" class="file-name"></span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h2>Étape 2: Convertir en JSON</h2>
+            <p>Cliquez sur le bouton pour traiter et convertir le fichier Excel en format JSON.</p>
+            <button id="convert-btn" class="btn" disabled>Convertir</button>
+        </div>
+        
+        <div class="step">
+            <h2>Logs de conversion</h2>
+            <div id="conversion-log"></div>
+        </div>
+        
+        <div id="result-section" class="step hidden">
+            <h2>Étape 3: Résultat de la conversion</h2>
+            <p>Le fichier Excel a été converti en JSON. Vous pouvez prévisualiser ou télécharger le résultat.</p>
+            
+            <div class="preview-container">
+                <h3>Aperçu JSON</h3>
+                <pre id="preview-json"></pre>
+            </div>
+            
+            <div class="download-container">
+                <button id="download-btn" class="btn">Télécharger le JSON</button>
+                <button id="copy-btn" class="btn">Copier le JSON</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charger les bibliothèques -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="./pba_excel_processor.js"></script>
+    
+    <script>
+        // Variables globales
+        let excelFile = null;
+        let convertedData = null;
+        
+        // Éléments DOM
+        const fileInput = document.getElementById('excel-upload');
+        const fileName = document.getElementById('file-name');
+        const convertBtn = document.getElementById('convert-btn');
+        const logContainer = document.getElementById('conversion-log');
+        const resultSection = document.getElementById('result-section');
+        const previewJson = document.getElementById('preview-json');
+        const downloadBtn = document.getElementById('download-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        
+        // Ajouter un log au conteneur
+        function addLog(message, type = 'info') {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = message;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Gestionnaire d'événement pour la sélection de fichier
+        fileInput.addEventListener('change', (event) => {
+            if (!event.target.files || event.target.files.length === 0) {
+                addLog('Aucun fichier sélectionné', 'warning');
+                return;
+            }
+            
+            excelFile = event.target.files[0];
+            fileName.textContent = excelFile.name;
+            
+            // Activer le bouton de conversion
+            convertBtn.disabled = false;
+            
+            addLog(`Fichier sélectionné: ${excelFile.name}`, 'info');
+        });
+        
+        // Gestionnaire d'événement pour la conversion
+        convertBtn.addEventListener('click', async () => {
+            if (!excelFile) {
+                addLog('Aucun fichier à convertir', 'error');
+                return;
+            }
+            
+            // Vider les logs précédents
+            logContainer.innerHTML = '';
+            addLog('Début de la conversion...', 'info');
+            
+            try {
+                // Désactiver le bouton pendant la conversion
+                convertBtn.disabled = true;
+                
+                // Lire le fichier
+                const arrayBuffer = await excelFile.arrayBuffer();
+                addLog('Fichier chargé en mémoire', 'info');
+                
+                // Créer un workbook
+                const workbook = new ExcelJS.Workbook();
+                
+                // Charger le contenu dans le workbook
+                await workbook.xlsx.load(arrayBuffer);
+                addLog('Excel chargé avec succès', 'info');
+                
+                // Vérifier si le PBAExcelProcessor est disponible
+                if (!window.PBAExcelProcessor) {
+                    throw new Error('PBAExcelProcessor non disponible');
+                }
+                
+                // Transformer puis convertir en JSON
+                const result = await window.PBAExcelProcessor.processExcel(workbook);
+                convertedData = result.jsonData;
+                addLog(`Transformation et conversion réussies: ${convertedData.length} lignes obtenues`, 'success');
+                addLog(`Les en-têtes des joueurs ont été modifiés au format générique A1, A2, B1, B2, etc.`, 'info');
+                
+                // Filtrer les lignes vides
+                const filteredData = convertedData.filter(row => {
+                    if (!row) return false;
+                    
+                    // Vérifier si la ligne contient des données
+                    const hasContent = Object.values(row).some(val => val !== null && val !== '');
+                    
+                    return hasContent;
+                });
+                
+                // Mettre à jour les données converties
+                convertedData = filteredData;
+                addLog(`Après filtrage: ${convertedData.length} lignes valides`, 'info');
+                
+                // Afficher le résultat
+                displayResult();
+                
+            } catch (error) {
+                addLog(`Erreur lors de la conversion: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                // Réactiver le bouton
+                convertBtn.disabled = false;
+            }
+        });
+        
+        // Afficher le résultat de la conversion
+        function displayResult() {
+            if (!convertedData || convertedData.length === 0) {
+                addLog('Aucune donnée à afficher', 'warning');
+                return;
+            }
+            
+            // Formater le JSON pour l'affichage
+            const formattedJson = JSON.stringify(convertedData, null, 2);
+            
+            // Afficher un aperçu limité
+            const maxChars = 10000; // Limiter l'aperçu pour éviter les problèmes de performance
+            previewJson.textContent = formattedJson.length > maxChars 
+                ? formattedJson.substring(0, maxChars) + '\n\n[... Aperçu tronqué, le fichier complet sera disponible au téléchargement ...]' 
+                : formattedJson;
+            
+            // Afficher la section de résultat
+            resultSection.classList.remove('hidden');
+            
+            // Faire défiler jusqu'au résultat
+            resultSection.scrollIntoView({ behavior: 'smooth' });
+            
+            addLog('Aperçu généré avec succès', 'success');
+        }
+        
+        // Télécharger le JSON
+        downloadBtn.addEventListener('click', () => {
+            if (!convertedData) {
+                addLog('Aucune donnée à télécharger', 'warning');
+                return;
+            }
+            
+            // Créer le contenu JSON
+            const jsonContent = JSON.stringify(convertedData, null, 2);
+            
+            // Créer un blob
+            const blob = new Blob([jsonContent], { type: 'application/json' });
+            
+            // Créer une URL pour le blob
+            const url = URL.createObjectURL(blob);
+            
+            // Créer un lien de téléchargement
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = excelFile.name.replace('.xlsx', '.json');
+            
+            // Ajouter le lien au document et cliquer dessus
+            document.body.appendChild(a);
+            a.click();
+            
+            // Nettoyer
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addLog('Téléchargement lancé', 'success');
+        });
+        
+        // Copier le JSON dans le presse-papier
+        copyBtn.addEventListener('click', () => {
+            if (!convertedData) {
+                addLog('Aucune donnée à copier', 'warning');
+                return;
+            }
+            
+            // Créer le contenu JSON
+            const jsonContent = JSON.stringify(convertedData, null, 2);
+            
+            // Copier dans le presse-papier
+            navigator.clipboard.writeText(jsonContent).then(
+                () => {
+                    addLog('JSON copié dans le presse-papier', 'success');
+                },
+                (err) => {
+                    addLog(`Erreur lors de la copie: ${err}`, 'error');
+                }
+            );
+        });
+        
+        // Initialisation
+        addLog('Convertisseur Excel → JSON initialisé', 'info');
+        addLog('Sélectionnez un fichier Excel pour commencer', 'info');
+    </script>
+</body>
+</html>

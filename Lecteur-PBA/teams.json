@@ -1,0 +1,170 @@
+{
+    "teams": [
+      {
+        "name": "Oko-Rockets",
+        "shortName": "Rockets",
+        "logo": "oko-rockets-logo.png",
+        "primaryColor": "#850F21",
+        "secondaryColor": "#F8ECDC",
+        "tertiaryColor": "#121D24",
+        "font": "Orbitron",
+        "players": [
+          "Arteka56", "Théguils", "JeanTaur", "Tonton", "Dilon Bricks"
+        ]
+      },
+      {
+        "name": "Can-Heat-Balls",
+        "shortName": "Can Heat Balls",
+        "logo": "can-heat-balls-logo.png",
+        "primaryColor": "#9E171A",
+        "secondaryColor": "#F2AA2D",
+        "tertiaryColor": "#4D0E0C",
+        "font": "Bangers",
+        "players": [
+          "backzylul", "Djetro", "wilfriedrp", "Teiqola", "Elodays"
+        ]
+      },
+      {
+        "name": "Gaus-Spurs",
+        "shortName": "Spurs",
+        "logo": "gaus-spurs-logo.png",
+        "primaryColor": "#A1A1A1",
+        "secondaryColor": "#181816",
+        "tertiaryColor": "#181816",
+        "font": "Bebas Neue",
+        "players": [
+          "ElBoully", "SangoRiley", "Pic", "Simoul", "Ellie"
+        ]
+      },
+      {
+        "name": "Sigma 68ers",
+        "shortName": "68ers",
+        "logo": "sigma-68ers-logo.png",
+        "primaryColor": "#CD2836",
+        "secondaryColor": "#FFFFFF",
+        "tertiaryColor": "#0F2B5B",
+        "font": "Archivo Black",
+        "players": [
+          "Da Pounce", "JLGO", "Yahiko", "Manu Ginobili II", "Fab"
+        ]
+      },
+      {
+        "name": "Tuah Hawks",
+        "shortName": "Hawks",
+        "logo": "tuah-hawks-logo.png",
+        "primaryColor": "#4E99A6",
+        "secondaryColor": "#FFFFFF",
+        "tertiaryColor": "#1C6281",
+        "font": "Oswald",
+        "players": [
+          "as2pike", "Sphynx787", "Fajitas33", "Crabou", "Tng10"
+        ]
+      },
+      {
+        "name": "Bear Hodlers",
+        "shortName": "Bears",
+        "logo": "bear-hodlers-logo.png",
+        "primaryColor": "#243F58",
+        "secondaryColor": "#D9CEB6",
+        "tertiaryColor": "#E5A83C",
+        "font": "Teko",
+        "players": [
+          "Rzh", "TankRomagnoli", "brice4307", "Bueno2So", "IamNickColt"
+        ]
+      },
+      {
+        "name": "Burnt Dinosaurs",
+        "shortName": "Dinos",
+        "logo": "burnt-dinosaurs-logo.png",
+        "primaryColor": "#005229",
+        "secondaryColor": "#FF6600",
+        "tertiaryColor": "#006633",
+        "font": "Staatliches",
+        "players": [
+          "matgt", "Sparfou", "KingFire", "p0uet21", "Scredss"
+        ]
+      },
+      {
+        "name": "Ocean Demons",
+        "shortName": "Demons",
+        "logo": "ocean-demons-logo.png",
+        "primaryColor": "#7E2CBA",
+        "secondaryColor": "#F5EA72",
+        "tertiaryColor": "#F5EA72",
+        "font": "Creepster",
+        "players": [
+          "BuzzerBeater", "PetiteJuju", "ShaadowStorme", "Locksyn", "Wayk00"
+        ]
+      },
+      {
+        "name": "Bos-Storm-Troopers",
+        "shortName": "Troopers",
+        "logo": "bos-storm-troopers-logo.png",
+        "primaryColor": "#394840",
+        "secondaryColor": "#D69140",
+        "tertiaryColor": "#D69140",
+        "font": "Rajdhani",
+        "players": [
+          "Seyars27", "Coconuts", "wazoolevrai", "Batigoal", "2b2a"
+        ]
+      },
+      {
+        "name": "FOMO Princes",
+        "shortName": "Princes",
+        "logo": "fomo-princes-logo.png",
+        "primaryColor": "#56387B",
+        "secondaryColor": "#D7C5A0",
+        "tertiaryColor": "#202E49", 
+        "font": "Cinzel",
+        "players": [
+          "Schuriken", "Elgaborracho", "Luc813", "Sdely", "RogerPalaref"
+        ]
+      },
+      {
+        "name": "Mosquit-Hornets",
+        "shortName": "Hornets",
+        "logo": "mosquit-hornets-logo.png",
+        "primaryColor": "#97BDC5",
+        "secondaryColor": "#124762",
+        "tertiaryColor": "#124762",
+        "font": "Saira Condensed",
+        "players": [
+          "MaximeS28", "lepil", "Michel pinto", "kaiser06", "Sorarecaillard"
+        ]
+      },
+      {
+        "name": "Moon Dragons",
+        "shortName": "Dragons",
+        "logo": "moon-dragons-logo.png",
+        "primaryColor": "#153148",
+        "secondaryColor": "#F2A92D",
+        "tertiaryColor": "#CA5213", 
+        "font": "Cinzel",
+        "players": [
+          "loulm", "Lordsun", "Paris93260", "Sese0750", "Selim1050"
+        ]
+      }, {
+        "name": "Rap-Thors",
+        "shortName": "Thors",
+        "logo": "rap-thors-logo.png",
+        "primaryColor": "#881422",
+        "secondaryColor": "#C3932D",
+        "tertiaryColor": "#CAC8BF", 
+        "font": "Cinzel",
+        "players": [
+          "player1", "player2", "player3", "player4", "player5"
+        ]
+      }, {
+        "name": "Strip Gamblers",
+        "shortName": "Gamblers",
+        "logo": "strip-gamblers-logo.png",
+        "primaryColor": "#111512",
+        "secondaryColor": "#EBE3D6",
+        "tertiaryColor": "#C09B55", 
+        "font": "Cinzel",
+        "players": [
+          "1of1collectors", "Juventino9", "AlpagaOfficiel", "Elphenomeno", "Robin"
+        ]
+      }
+    ]
+  }

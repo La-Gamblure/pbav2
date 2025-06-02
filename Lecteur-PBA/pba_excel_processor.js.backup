@@ -1,0 +1,507 @@
+/**
+ * PBA Excel Processor
+ * 
+ * Ce script combine les fonctionnalités de transformation d'Excel et de conversion en JSON
+ * dans un seul fichier utilisable dans un environnement navigateur ou Node.js.
+ * 
+ * Il peut être utilisé soit en mode Frontend (navigateur) avec des fichiers uploadés par l'utilisateur,
+ * soit en mode Backend (Node.js) pour traiter des fichiers sur le serveur.
+ */
+
+// Définition du module principal
+const PBAExcelProcessor = (function() {
+  // Variables et constantes privées
+  let excelJS; // Sera défini différemment selon l'environnement (navigateur ou Node.js)
+  let fs;      // Module fs (uniquement en mode Node.js)
+  let path;    // Module path (uniquement en mode Node.js)
+  
+  /**
+   * Normalise une chaîne pour la rendre compatible avec les ID CSS :
+   * - Remplace les espaces par des tirets
+   * - Supprime les accents
+   * - Supprime les caractères spéciaux non compatibles
+   * @param {string} str - Chaîne à normaliser
+   * @returns {string} - Chaîne normalisée compatible CSS
+   */
+  function normalizeCssId(str) {
+    if (!str || typeof str !== 'string') return str;
+    
+    // Étape 1: Supprimer les accents
+    const withoutAccents = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    // Étape 2: Remplacer les espaces par des tirets
+    const withHyphens = withoutAccents.replace(/\s+/g, '-');
+    
+    // Étape 3: Supprimer les caractères non compatibles avec les ID CSS
+    // Garder les lettres, chiffres, tirets, soulignés
+    return withHyphens.replace(/[^\w\-]/g, '');
+  }
+  
+  // Détection de l'environnement
+  const isNode = typeof window === 'undefined' && typeof process !== 'undefined';
+  
+  // Initialisation des dépendances selon l'environnement
+  if (isNode) {
+    excelJS = require('exceljs');
+    fs = require('fs');
+    path = require('path');
+  } else {
+    // En environnement navigateur, ExcelJS doit être chargé via un tag script dans le HTML
+    excelJS = window.ExcelJS;
+    if (!excelJS) {
+      console.error("ExcelJS n'est pas chargé. Assurez-vous d'inclure ExcelJS dans votre HTML.");
+    }
+  }
+  
+  /**
+   * Transforme un fichier Excel selon les spécifications PBA
+   * @param {Workbook|File|Blob|String} input - Workbook ExcelJS, fichier/blob (navigateur) ou chemin (Node.js)
+   * @param {Object} options - Options de configuration
+   * @returns {Promise<Workbook>} Le workbook transformé
+   */
+  async function transformExcel(input, options = {}) {
+    try {
+      // Initialiser le workbook
+      const workbook = await loadWorkbook(input);
+      const worksheet = workbook.getWorksheet(1);
+      
+      // 1/ Supprimer le contenu de A1:B1
+      worksheet.getCell('A1').value = null;
+      worksheet.getCell('B1').value = null;
+
+      // 2/ COUPER/COLLE A2:G2 en A1:G1
+      for (let colIdx = 1; colIdx <= 7; colIdx++) {
+        const colLetter = String.fromCharCode(64 + colIdx); // Conversion de l'indice en lettre (A=65 en ASCII)
+        const cellValue = worksheet.getCell(`${colLetter}2`).value;
+        worksheet.getCell(`${colLetter}1`).value = cellValue;
+        worksheet.getCell(`${colLetter}2`).value = null;
+      }
+
+      // 3/ Insérer en A2:G2 [Q1,12:00,0,Debut du match, {rien},{rien},{rien}]
+      const newRowValues = ["Q1", "12:00", "0", "Debut du match", "", "", ""];
+      for (let colIdx = 1; colIdx <= newRowValues.length; colIdx++) {
+        const colLetter = String.fromCharCode(64 + colIdx);
+        worksheet.getCell(`${colLetter}2`).value = newRowValues[colIdx - 1];
+      }
+
+      // 4/ Parcourir toutes les cellules du fichier pour trouver et remplacer {rien}
+      worksheet.eachRow({ includeEmpty: true }, function(row) {
+        row.eachCell({ includeEmpty: true }, function(cell) {
+          if (cell.value === "{rien}") {
+            cell.value = "";
+          }
+        });
+      });
+
+      // Vérifier si la cellule DF2 contient un 0 et le supprimer
+      const dfCell = worksheet.getCell('DF2');
+      if (dfCell.value === 0) {
+        dfCell.value = "";
+      }
+
+      // 5/ Modifier les en-têtes des sept premières colonnes (scoreboard et commentaire)
+      // Les 7 premières colonnes
+      const firstColumns = [];
+      for (let i = 1; i <= 7; i++) {
+        firstColumns.push(worksheet.getCell(1, i));
+      }
+
+      // Ajouter "scoreboard" devant les 3 premières colonnes
+      for (let i = 0; i < 3; i++) {
+        if (i < firstColumns.length) {
+          const cell = firstColumns[i];
+          const originalValue = cell.value;
+          if (originalValue) {  // Si la cellule n'est pas vide
+            cell.value = `scoreboard ${originalValue}`;
+          }
+        }
+      }
+
+      // Ajouter "commentaire" devant les 4 colonnes suivantes
+      for (let i = 3; i < 7; i++) {
+        if (i < firstColumns.length) {
+          const cell = firstColumns[i];
+          const originalValue = cell.value;
+          if (originalValue) {  // Si la cellule n'est pas vide
+            cell.value = `commentaire ${originalValue}`;
+          }
+        }
+      }
+
+      // 6/ Modifier les en-têtes des joueurs (ligne 1)
+      // Collecter tous les en-têtes avec le format "NomJoueur-Stat"
+      const playerHeaders = {};
+      const playerTeams = {};
+      const playerOrder = [];
+      const totalCells = [];
+      
+      // Parcourir la première ligne
+      const headerRow = worksheet.getRow(1);
+      headerRow.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        const headerValue = cell.value;
+        
+        // Chercher les colonnes "Total"
+        if (headerValue === "Total") {
+          totalCells.push({ colNumber, cell });
+        }
+        
+        // Chercher les colonnes de joueurs (format "NomJoueur-Stat")
+        if (typeof headerValue === 'string' && headerValue.includes('-')) {
+          const [playerName, stat] = headerValue.split('-', 2);
+          
+          // Ajouter le joueur à l'ordre d'apparition s'il n'est pas déjà présent
+          if (!playerOrder.includes(playerName)) {
+            playerOrder.push(playerName);
+          }
+          
+          // Déterminer l'équipe du joueur
+          if (!playerTeams[playerName]) {
+            // Attribuer A ou B basé sur l'ordre de découverte
+            const team = Object.keys(playerTeams).length < 5 ? 'A' : 'B';
+            playerTeams[playerName] = team;
+          }
+          
+          if (!playerHeaders[playerName]) {
+            playerHeaders[playerName] = [];
+          }
+          playerHeaders[playerName].push({ colNumber, stat });
+        }
+      });
+
+      // Grouper les joueurs par équipe en conservant l'ordre de découverte
+      const teamAPlayers = playerOrder.filter(p => playerTeams[p] === 'A');
+      const teamBPlayers = playerOrder.filter(p => playerTeams[p] === 'B');
+
+      // Mappage pour remplacer les en-têtes des joueurs
+      for (let idx = 0; idx < teamAPlayers.length; idx++) {
+        const player = teamAPlayers[idx];
+        const playerNumber = idx + 1;
+        
+        // Remplacer les statistiques standard du joueur
+        for (const { colNumber, stat } of playerHeaders[player]) {
+          const newHeader = `A${playerNumber} ${stat}`;
+          worksheet.getCell(1, colNumber).value = newHeader;
+        }
+        
+        // Attribuer la colonne Total correspondante
+        if (idx < totalCells.length) {
+          const { colNumber } = totalCells[idx];
+          worksheet.getCell(1, colNumber).value = `A${playerNumber} Total`;
+        }
+      }
+
+      for (let idx = 0; idx < teamBPlayers.length; idx++) {
+        const player = teamBPlayers[idx];
+        const playerNumber = idx + 1;
+        
+        // Remplacer les statistiques standard du joueur
+        for (const { colNumber, stat } of playerHeaders[player]) {
+          const newHeader = `B${playerNumber} ${stat}`;
+          worksheet.getCell(1, colNumber).value = newHeader;
+        }
+        
+        // Attribuer la colonne Total correspondante
+        if (idx < totalCells.length - teamAPlayers.length) {
+          const { colNumber } = totalCells[teamAPlayers.length + idx];
+          worksheet.getCell(1, colNumber).value = `B${playerNumber} Total`;
+        }
+      }
+
+      // 5.1/ Ajouter "scoreboard" devant les colonnes de score cumulé et supprimer la colonne "Equipe"
+      let equipeColIdx = null;
+      const scoreCells = [];
+
+      // Parcourir à nouveau la première ligne pour trouver les colonnes de score et la colonne Equipe
+      headerRow.eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        const value = cell.value;
+        if (typeof value === 'string' && value.includes("Score cumulé Equipe")) {
+          scoreCells.push({ colNumber, cell });
+        } else if (value === "Equipe" && colNumber > 100) {  // Pour éviter de confondre avec d'autres colonnes "Equipe"
+          equipeColIdx = colNumber;
+        }
+      });
+
+      // Ajouter "scoreboard" aux colonnes de score
+      for (const { cell } of scoreCells) {
+        cell.value = `scoreboard ${cell.value}`;
+      }
+      
+      // Formatage spécial pour la colonne "scoreboard Temps"
+      // Parcourir toutes les lignes pour formater les valeurs de temps
+      const tempsColIndex = firstColumns[1].col; // La colonne "Temps" est la 2ème colonne (index 1)
+      worksheet.eachRow({ includeEmpty: false }, function(row, rowNumber) {
+        if (rowNumber === 1) return; // Ignorer l'en-tête
+        
+        const tempsCell = row.getCell(tempsColIndex);
+        const tempsValue = tempsCell.value;
+        
+        if (tempsValue && typeof tempsValue === 'string') {
+          // Convertir du format "12'00''" au format "12:00"
+          const newValue = tempsValue.replace(/([0-9]+)'([0-9]+)''/g, "$1:$2");
+          tempsCell.value = newValue;
+        }
+      });
+
+      // Supprimer complètement la colonne "Equipe" si elle existe
+      if (equipeColIdx) {
+        worksheet.spliceColumns(equipeColIdx, 1);
+      }
+
+      // Message de log
+      console.log("Transformation du fichier Excel terminée");
+      console.log("Les en-têtes des joueurs ont été modifiés au format générique A1, A2, B1, B2, etc.");
+      
+      return workbook;
+    } catch (error) {
+      console.error("Erreur lors de la transformation :", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convertit un workbook Excel en données JSON
+   * @param {Workbook} workbook - Le workbook ExcelJS à convertir
+   * @returns {Array} Tableau d'objets JSON
+   */
+  function workbookToJson(workbook) {
+    try {
+      const worksheet = workbook.getWorksheet(1);
+      
+      // Extraire la première ligne pour utiliser comme en-têtes
+      const headers = [];
+      const originalHeaders = [];
+      worksheet.getRow(1).eachCell({ includeEmpty: true }, function(cell, colNumber) {
+        let headerValue = cell.value;
+        
+        // Gérer les valeurs null ou vides dans les en-têtes
+        if (headerValue === null || headerValue === undefined) {
+          // Générer un nom de colonne basé sur sa position
+          let colLetter = '';
+          let temp = colNumber - 1;
+          do {
+            colLetter = String.fromCharCode(65 + (temp % 26)) + colLetter;
+            temp = Math.floor(temp / 26) - 1;
+          } while (temp >= 0);
+          headerValue = `Column_${colLetter}`;
+        } else {
+          // Convertir en chaîne si ce n'est pas déjà le cas
+          headerValue = String(headerValue);
+        }
+        
+        // Sauvegarder la valeur originale
+        originalHeaders[colNumber - 1] = headerValue;
+        
+        // Normaliser pour CSS ID
+        headers[colNumber - 1] = normalizeCssId(headerValue);
+      });
+      
+      // Convertir le worksheet en liste de dictionnaires (à partir de la 2ème ligne)
+      const data = [];
+      for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+        const row = worksheet.getRow(rowNumber);
+        const rowDict = {};
+        
+        row.eachCell({ includeEmpty: false }, function(cell, colNumber) {
+          if (colNumber <= headers.length) {
+            const header = headers[colNumber - 1];
+            let cellValue = cell.value;
+            
+            // Traiter les différents types de valeurs de cellule
+            if (cellValue !== null && cellValue !== undefined) {
+              // Si c'est un objet richText ou une formule, extraire la valeur textuelle
+              if (cellValue.richText) {
+                cellValue = cellValue.richText.map(rt => rt.text).join('');
+              } else if (cellValue.formula) {
+                cellValue = cellValue.result;
+              } else if (cellValue.text) {
+                cellValue = cellValue.text;
+              }
+              
+              // Préserver les zéros (ne pas les convertir en chaînes vides)
+              if (cellValue === 0) {
+                cellValue = 0;
+              }
+            } else {
+              // Convertir null ou undefined en chaîne vide
+              cellValue = "";
+            }
+            
+            // Utiliser l'en-tête normalisée pour CSS ID
+            rowDict[header] = cellValue;
+          }
+        });
+        
+        // Ajouter des entrées pour les cellules vides qui n'ont pas été traitées
+        headers.forEach((header, colIndex) => {
+          if (!(header in rowDict)) {
+            rowDict[header] = "";
+          }
+        });
+        
+        // Ajouter le dictionnaire de la ligne à la liste des données
+        data.push(rowDict);
+      }
+      
+      console.log("Conversion en JSON terminée");
+      return data;
+    } catch (error) {
+      console.error("Erreur lors de la conversion en JSON :", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Traite un fichier Excel PBA : transformation + conversion en JSON
+   * @param {Workbook|File|Blob|String} input - Workbook ExcelJS, fichier/blob (navigateur) ou chemin (Node.js)
+   * @param {Object} options - Options de configuration
+   * @returns {Promise<Object>} Objet contenant workbook et données JSON
+   */
+  async function processExcel(input, options = {}) {
+    try {
+      // Étape 1: Transformer le fichier Excel
+      const transformedWorkbook = await transformExcel(input, options);
+      
+      // Étape 2: Convertir en JSON
+      const jsonData = workbookToJson(transformedWorkbook);
+      
+      return {
+        workbook: transformedWorkbook,
+        jsonData: jsonData
+      };
+    } catch (error) {
+      console.error("Erreur lors du traitement du fichier Excel :", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Charge un workbook à partir de différentes sources (fichier, blob, chemin...)
+   * @param {Workbook|File|Blob|String} input - Source du workbook
+   * @returns {Promise<Workbook>} Le workbook chargé
+   */
+  async function loadWorkbook(input) {
+    if (input instanceof excelJS.Workbook) {
+      return input;
+    }
+    
+    const workbook = new excelJS.Workbook();
+    
+    if (isNode && typeof input === 'string') {
+      // Mode Node.js avec chemin de fichier
+      return await workbook.xlsx.readFile(input);
+    } else if (!isNode && (input instanceof File || input instanceof Blob)) {
+      // Mode navigateur avec File ou Blob
+      const arrayBuffer = await input.arrayBuffer();
+      return await workbook.xlsx.load(arrayBuffer);
+    } else {
+      throw new Error("Format d'entrée non pris en charge");
+    }
+  }
+
+  /**
+   * Sauvegarde un workbook selon l'environnement
+   * @param {Workbook} workbook - Le workbook à sauvegarder
+   * @param {String} outputPath - Chemin de sortie (Node.js) ou null (navigateur)
+   * @returns {Promise<Blob|String>} Blob (navigateur) ou chemin (Node.js)
+   */
+  async function saveWorkbook(workbook, outputPath = null) {
+    if (isNode && outputPath) {
+      // Mode Node.js: sauvegarder dans un fichier
+      const outputDir = path.dirname(outputPath);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      await workbook.xlsx.writeFile(outputPath);
+      return outputPath;
+    } else {
+      // Mode navigateur: retourner un Blob
+      const buffer = await workbook.xlsx.writeBuffer();
+      return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    }
+  }
+
+  /**
+   * Sauvegarde des données JSON selon l'environnement
+   * @param {Array} jsonData - Les données JSON à sauvegarder
+   * @param {String} outputPath - Chemin de sortie (Node.js) ou null (navigateur)
+   * @returns {Promise<Blob|String>} Blob (navigateur) ou chemin (Node.js)
+   */
+  async function saveJson(jsonData, outputPath = null) {
+    const jsonStr = JSON.stringify(jsonData, (key, value) => {
+      // Fonction spéciale pour gérer la sérialisation des dates et autres types
+      if (value instanceof Date) {
+        return value.toISOString();
+      }
+      return value;
+    }, 2);
+    
+    if (isNode && outputPath) {
+      // Mode Node.js: sauvegarder dans un fichier
+      const outputDir = path.dirname(outputPath);
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+      fs.writeFileSync(outputPath, jsonStr, 'utf8');
+      return outputPath;
+    } else {
+      // Mode navigateur: retourner un Blob
+      return new Blob([jsonStr], { type: 'application/json' });
+    }
+  }
+
+  // API publique (fonctions exportées)
+  return {
+    processExcel,
+    transformExcel,
+    workbookToJson,
+    saveWorkbook,
+    saveJson,
+    // Fonctionnalités spécifiques à Node.js
+    nodeProcessFiles: isNode ? async function(inputFile, outputExcel, outputJson) {
+      try {
+        // Vérifier si le fichier d'entrée existe
+        if (!fs.existsSync(inputFile)) {
+          console.error(`Erreur: Le fichier ${inputFile} n'existe pas.`);
+          return;
+        }
+        
+        // Transformer le fichier Excel
+        const transformedWorkbook = await transformExcel(inputFile);
+        
+        // Sauvegarder le fichier Excel transformé
+        await saveWorkbook(transformedWorkbook, outputExcel);
+        console.log(`Transformation terminée. Fichier sauvegardé : ${outputExcel}`);
+        
+        // Convertir en JSON
+        const jsonData = workbookToJson(transformedWorkbook);
+        
+        // Sauvegarder le JSON
+        await saveJson(jsonData, outputJson);
+        console.log(`Conversion réussie. Fichier JSON sauvegardé : ${outputJson}`);
+        
+        return {
+          workbook: transformedWorkbook,
+          jsonData: jsonData
+        };
+      } catch (error) {
+        console.error("Erreur lors du traitement des fichiers :", error);
+        throw error;
+      }
+    } : null
+  };
+})();
+
+// Export pour Node.js
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = PBAExcelProcessor;
+}
+
+// Si le script est exécuté directement en mode Node.js
+if (typeof require !== 'undefined' && require.main === module) {
+  const inputFile = "input/Data-brut-PBA (2).xlsx";
+  const outputExcel = "output/Data-transformed-PBA.xlsx";
+  const outputJson = "output/Data-PBA.json";
+  
+  PBAExcelProcessor.nodeProcessFiles(inputFile, outputExcel, outputJson)
+    .catch(err => console.error("Erreur:", err));
+}

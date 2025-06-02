@@ -1,0 +1,165 @@
+/* Navbar styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    color: white;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.navbar-logo img {
+    height: 100px;
+    width: auto;
+}
+
+.navbar-logo span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #f0f0f0;
+}
+
+/* Navbar controls */
+.navbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* Teams selector styling */
+.teams-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.team-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.team-selector label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #aaa;
+}
+
+.team-select {
+    background-color: #333;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    width: 180px;
+    cursor: pointer;
+    outline: none;
+}
+
+.team-select:focus {
+    border-color: #ff8c00;
+}
+
+.vs-separator {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ff8c00;
+    margin: 0 0.5rem;
+    margin-top: 1.2rem;
+}
+
+/* JSON upload button styling */
+.json-upload {
+    position: relative;
+}
+
+.file-upload {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.7rem 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.file-upload-label:hover {
+    background-color: #e67a00;
+}
+
+.upload-icon {
+    font-size: 1.2rem;
+}
+
+/* Style amélioré pour les liens de navigation */
+.nav-items {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-item {
+    display: inline-block;
+    background-color: #333;
+    color: #61dafb;
+    border: 2px solid #61dafb;
+    padding: 8px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.nav-item:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(97, 218, 251, 0.2), transparent);
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+.nav-item:hover {
+    color: #ffffff;
+    background-color: #275a6b;
+    border-color: #7ce3ff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(97, 218, 251, 0.4);
+}
+
+.nav-item:hover:before {
+    left: 100%;
+}
+
+.nav-item:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(97, 218, 251, 0.4);
+}

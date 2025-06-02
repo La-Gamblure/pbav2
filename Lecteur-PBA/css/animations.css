@@ -1,0 +1,52 @@
+/* Animations CSS pour PBA Lecteur */
+
+/* Animation de mise en évidence des cellules modifiées */
+@keyframes highlight-pulse {
+    0% {
+        /* Début de l'animation - normal */
+        transform: scale(1);
+        opacity: 1;
+        outline: 0px solid gold;
+    }
+    25% {
+        /* Point à 25% - agrandi et brillant */
+        transform: scale(1.15);
+        outline: 3px solid gold;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+        filter: brightness(1.3);
+        z-index: 10;
+    }
+    50% {
+        /* Point à 50% - légèrement réduit */
+        transform: scale(1.1);
+        outline: 2px solid gold;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        filter: brightness(1.2);
+        z-index: 10;
+    }
+    75% {
+        /* Point à 75% - légèrement agrandi */
+        transform: scale(1.05);
+        outline: 1px solid gold;
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        filter: brightness(1.1);
+    }
+    100% {
+        /* Fin - retour à l'état normal */
+        transform: scale(1);
+        opacity: 1;
+        outline: 0px solid transparent;
+        box-shadow: none;
+        filter: brightness(1);
+    }
+}
+
+/* Classe pour les cellules qui changent */
+.stat-highlight {
+    animation: highlight-pulse 1s ease-in-out;
+    position: relative;
+    z-index: 10; /* Z-index élevé pour être au-dessus des autres éléments */
+    font-weight: 800 !important; /* Force le gras pendant l'animation */
+    transition: all 0.3s ease;
+    /* Ne change pas la couleur de fond/texte pour conserver les styles d'équipe */
+}

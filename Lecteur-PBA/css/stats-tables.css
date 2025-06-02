@@ -1,0 +1,421 @@
+/* === Variables CSS pour les couleurs d'équipe === */
+:root {
+  /* Couleurs équipe A */
+  --team-a-bg: rgba(112,111,214,0.15); /* Bleu transparent */
+  --team-a-primary: var(--team-a-primary, #706FD6);
+  --team-a-secondary: var(--team-a-secondary, #FFFFFF); 
+  --team-a-tertiary: var(--team-a-tertiary, #004D87);
+  --team-a-text: var(--team-a-secondary, #FFFFFF); /* Utilise la couleur des bordures des team-label */
+  
+  /* Couleurs équipe B */
+  --team-b-bg: rgba(214,95,95,0.15);  /* Rouge transparent */
+  --team-b-primary: var(--team-b-primary, #D65F5F);
+  --team-b-secondary: var(--team-b-secondary, #FFFFFF);
+  --team-b-tertiary: var(--team-b-tertiary, #553311);
+  --team-b-text: var(--team-b-secondary, #FFFFFF); /* Utilise la couleur des bordures des team-label */
+}
+
+/* === conteneur === */
+.stats-container {
+    height: 100%;
+    overflow: auto;
+    font-family: Arial, sans-serif;
+    padding: 10px 0;
+    background: #1e1e2d;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    color: #fff;
+  }
+  
+  /* === table === */
+  #stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #fff;
+    font-size: 30px;            /* un peu plus petit pour rentrer */
+    background-color: #1e1e2d;
+  }
+  
+  /* Pas de bordure par défaut pour les cellules normales */
+  #stats-table th,
+  #stats-table td {
+    border: none;
+    padding: .6rem .75rem;
+    text-align: center;
+  }
+
+  /* Bordures pour les cellules des équipes A et B */
+  /* Style de base pour toutes les cellules */
+  .team-a td, 
+  .team-a th,
+  #team-a-player td,
+  #stats-a td {
+    border: 4px solid var(--team-a-secondary);
+  }
+
+  .team-b td,
+  .team-b th,
+  #team-b-player td,
+  #stats-b td {
+    border: 4px solid var(--team-b-secondary);
+  }
+  
+  /* Bordure autour de tous les td de la ligne stats-label */
+  .stats-label td {
+    border: 4px solid currentColor;
+  }
+  
+  /* Styles spécifiques pour l'équipe A */
+  /* Bordure supérieure sur les td du joueur 1 */
+  #team-a-player tr:first-child td {
+    border-top: 4px solid var(--team-a-secondary);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+  }
+  
+  /* Bordure supérieure sur les cellules A1 */
+  #stats-a tr:first-child td {
+    border-top: 4px solid var(--team-a-secondary);
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+  }
+  
+  /* Bordures droite et gauche pour les cellules "total" de l'équipe A */
+  #stats-a .total-cell {
+    border-right: 4px solid var(--team-a-secondary);
+    border-left: 4px solid var(--team-a-secondary);
+    border-top: none;
+    border-bottom: none;
+  }
+  
+  /* Styles spécifiques pour l'équipe B */
+  /* Bordure inférieure sur les td du joueur 5 */
+  #team-b-player tr:last-child td {
+    border-bottom: 4px solid var(--team-b-secondary);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  
+  /* Bordure inférieure sur les cellules B5 */
+  #stats-b tr:last-child td {
+    border-bottom: 4px solid var(--team-b-secondary);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+  
+  /* Bordures gauche et droite pour les cellules "total" de l'équipe B */
+  #stats-b .total-cell {
+    border-right: 4px solid var(--team-b-secondary);
+    border-left: 4px solid var(--team-b-secondary);
+    border-top: none;
+    border-bottom: none;
+  }
+  
+  /* Conserver uniquement les bordures pour les team-labels */
+  .team-label {
+    border: 4px solid;
+    /* La couleur de bordure est appliquée dynamiquement par JavaScript */
+  }
+  
+  /* ligne d'en‑tête (Stats / Players / PTS …) */
+  .stats-row td {
+    background: #283e3a;
+    color: #64ffda;
+    font-weight:600;
+  }
+  
+  /* Suppression de la classe darker */
+  .team-logo-small {
+    width: 80px;          /* ajuste la taille à ton goût */
+    height: 80px;
+    object-fit: contain;  /* conserve les proportions */
+    display: block;
+    margin: 0 auto;       /* centre dans la cellule */
+  }
+  
+  /* Styles pour les lignes d'équipe */
+  .team-a {
+    background-color: var(--team-a-bg);
+    color: var(--team-a-text);
+  }
+
+  .team-b {
+    background-color: var(--team-b-bg);
+    color: var(--team-b-text);
+  }
+  
+  /* Styles directs pour les lignes */
+  tr.team-a {
+    background-color: var(--team-a-bg);
+    color: var(--team-a-text);
+    font-weight: 500;
+  }
+
+  tr.team-b {
+    background-color: var(--team-b-bg);
+    color: var(--team-b-text);
+    font-weight: 600;
+  }
+  
+  /* Pour les cellules normales */
+  .team-a td {
+    background-color: var(--team-a-bg);
+    color: var(--team-a-text);
+    font-weight: 600;
+  }
+
+  .team-b td {
+    background-color: var(--team-b-bg);
+    color: var(--team-b-text);
+    font-weight: 600;
+  }
+  
+  /* Pas de couleur spécifique pour les éléments box */
+  .team-a-box,
+  .team-b-box {
+    background-color: transparent;
+    color: inherit;
+  }
+  
+  /* Styles uniformisés pour toutes les cellules, sans différence de luminosité */
+  /* Tous les éléments d'équipe A auront exactement la même apparence */
+  #stats-table td[id^="A"] {
+    background-color: var(--team-a-bg);
+    color: var(--team-a-text);
+    font-weight: 600;
+  }
+  
+  /* Tous les éléments d'équipe B auront exactement la même apparence */
+  #stats-table td[id^="B"] {
+    background-color: var(--team-b-bg);
+    color: var(--team-b-text);
+    font-weight: 600;
+  }
+  
+  /* Suppression des styles d'accentuation */
+
+  /* Style pour les cellules d'étiquette d'équipe (team-label) */
+  .team-label {
+    position: relative;
+    z-index: 1;
+    /* Réinitialiser les bordures par défaut de la table */
+    border: none !important; /* Important nécessaire pour surcharger les bordures par défaut des tableaux */
+  }
+
+  .team-a .team-label {
+    background-color: var(--team-a-primary); /* Utiliser la couleur primaire exacte, pas de transparence */
+    /* Définir chaque côté individuellement */
+    border-top: 4px solid var(--team-a-secondary) !important; /* Important nécessaire pour les bordures */
+    border-right: 4px solid var(--team-a-secondary) !important;
+    border-bottom: 4px solid var(--team-a-secondary) !important;
+    border-left: 4px solid var(--team-a-secondary) !important;
+    box-sizing: border-box;
+  }
+
+  .team-b .team-label {
+    background-color: var(--team-b-primary); /* Utiliser la couleur primaire exacte, pas de transparence */
+    /* Définir chaque côté individuellement */
+    border-top: 4px solid var(--team-b-secondary) !important; /* Important nécessaire pour les bordures */
+    border-right: 4px solid var(--team-b-secondary) !important;
+    border-bottom: 4px solid var(--team-b-secondary) !important;
+    border-left: 4px solid var(--team-b-secondary) !important;
+    box-sizing: border-box;
+  }
+
+ 
+  
+  /* Style pour le tag MVP */
+  .mvp-tag {
+    background:#ffd700;   /* or #ffce00 */
+    color:#000;
+    font-size:1.5rem;
+    font-weight:700;
+    padding:2px 4px;
+    border-radius:4px;
+    margin-left:6px;
+  }
+
+  .turnover {
+    /* Style par défaut pour 0 */
+    background-color: transparent;
+    color: inherit;
+    font-weight: normal;
+}
+
+.turnover.active {
+    /* Style quand différent de 0 */
+    background-color: rgba(50, 50, 50, 0.8) !important;
+    color: #ff8a80 !important;
+    font-weight: bold;
+    border: 1px solid rgba(255, 100, 100, 0.5);
+}
+
+.turnover.critical {
+    /* Style quand <= -9 */
+    background-color: #ff0000 !important;
+    color: #ffffff;
+    font-weight: bold;
+    animation: criticalPulse 1.5s infinite;
+    border: 2px solid #ff6b6b;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.doubledouble {
+    /* Style par défaut pour 0 */
+    background-color: transparent;
+    color: inherit;
+    font-weight: normal;
+}
+
+/* Style pour doubledouble selon l'équipe */
+.team-a-table .doubledouble {
+    border: 2px solid var(--team-a-tertiary);
+}
+
+.team-b-table .doubledouble {
+    border: 2px solid var(--team-b-tertiary);
+}
+
+.doubledouble.active {
+    /* Style quand différent de 0 */
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    color: #ffffff;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    border: 2px solid #69f0ae !important;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    animation: ddGlow 2s infinite alternate;
+}
+
+.tripledouble {
+    /* Style par défaut pour 0 */
+    background-color: transparent;
+    color: inherit;
+    font-weight: normal;
+}
+
+.tripledouble.active {
+    /* Style quand différent de 0 */
+    background: linear-gradient(45deg, #ffd700, #ffeb3b);
+    color: #000000;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    border: 2px solid #ffd740;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+    animation: tdGlow 1.5s infinite alternate;
+    position: relative;
+}
+
+.tripledouble.active::after {
+    content: '★';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff9800;
+    font-size: 1.2em;
+    animation: starSpin 4s linear infinite;
+}
+
+@keyframes criticalPulse {
+    0% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+}
+
+@keyframes ddGlow {
+    0% {
+        box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(76, 175, 80, 0.9);
+    }
+}
+
+@keyframes tdGlow {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+    }
+    100% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 1);
+    }
+}
+
+@keyframes starSpin {
+    0% {
+        transform: translateY(-50%) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+  
+  /* noms des joueurs */
+  .player-name {
+    text-align:left;
+    padding-left:10px;
+    font-weight:800;
+  }
+  
+  /* Bordures spécifiques selon l'équipe */
+  .team-a-table .player-name {
+    border-right: 4px solid var(--team-a-secondary)!important;
+  }
+  
+  .team-b-table .player-name {
+    border-right: 4px solid var(--team-b-secondary)!important;
+  }
+  
+  /* Effet de contour sur le texte avec -webkit-text-stroke */
+  .team-a-table td {
+    -webkit-text-stroke: 1px var(--team-a-tertiary);
+  }
+  
+  .team-b-table td {
+    -webkit-text-stroke: 1px var(--team-b-tertiary);
+  }
+  
+  /* === Utilisation des variables CSS pour les couleurs de fond === */
+  /* Les styles sont maintenant définis en haut du fichier avec des variables */
+  
+  /* colonne TOTAL → même couleur que le reste, mais gras */
+  #stats-table td:last-child { font-weight:700; }
+  
+  /* Bordures de la colonne TOTAL */
+  .team-a-table .total-cell { 
+    border-left: 4px solid var(--team-a-secondary)!important; 
+  }
+  
+  .team-b-table .total-cell{ 
+    border-left: 4px solid var(--team-b-secondary)!important; 
+  }
+  
+  /* === effet hover optionnel === */
+  #stats-table tr:hover td {
+    filter: brightness(1.15);
+  }
+  
+  /* === scroll bar === */
+  .stats-container::-webkit-scrollbar { width:8px; }
+  .stats-container::-webkit-scrollbar-thumb {
+    background:#64ffda;
+    border-radius:4px;
+  }
+
+.team-a-table{
+    border: 4px solid var(--team-a-secondary);
+}
+
+.team-b-table{
+    border: 4px solid var(--team-b-secondary);
+}

@@ -1,0 +1,127 @@
+/* Main CSS styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+}
+
+/* Option 1: Fond sombre actuel (activé) */
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #121212;
+    color: #e0e0e0;
+    line-height: 1.6;
+    background-image: linear-gradient(to bottom right, #121212, #1e1e2d);
+}
+
+/* Option 2: Fond bleu profond (désactivé) */
+/*
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #0f172a;
+    color: #e0e0e0;
+    line-height: 1.6;
+    background-image: linear-gradient(to bottom right, #0f172a, #1e293b);
+}
+*/
+
+/* Option 3: Fond noir pur avec accent turquoise (désactivé) */
+/*
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #000000;
+    color: #e0e0e0;
+    line-height: 1.6;
+    background-image: linear-gradient(to bottom right, #000000, #111111);
+    border-top: 3px solid #64ffda;
+}
+*/
+
+/* Option 4: Fond gris foncé neutre (désactivé) */
+/*
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+    line-height: 1.6;
+    background-image: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+}
+*/
+
+/* Flex layout for entire page */
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Navbar: 1/10 of viewport height */
+.navbar {
+    height: 10vh;
+    min-height: 60px;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    max-width: 2100px;
+    min-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-self: center; /* Assure le centrage du conteneur */
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 90vh; /* Remaining 90% of viewport height */
+    width: 100%; /* Correction: utiliser 100% au lieu de 100vh */
+}
+
+/* Scoreboard: 3/10 of viewport height */
+.section:nth-child(1) {
+    height: 30vh;
+    min-height: 180px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+/* Commentary: 1/10 of viewport height */
+.section:nth-child(2) {
+    height: 10vh;
+    min-height: 60px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+/* Stats Table: 5/10 of viewport height */
+.section:nth-child(3) {
+    height: 50vh;
+    overflow-y: auto;
+    margin-bottom: 0;
+}
+
+/* Make sure child elements take full height */
+.scoreboard, .commentary-box, .stats-container {
+    height: 100%;
+}
+
+.scoreboard {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+}
