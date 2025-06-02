@@ -3,9 +3,69 @@
  * Gère les animations et effets visuels dynamiques de l'interface
  */
 
+// Styles CSS pour l'animation de tir
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes shotArc {
+        0% {
+            transform: translate(0, 0) scale(1);
+        }
+        50% {
+            transform: translate(var(--shot-distance), -100px) scale(0.7);
+        }
+        100% {
+            transform: translate(calc(var(--shot-distance) * 2), 0) scale(1);
+        }
+    }
+
+    .shooting {
+        animation: shotArc 1.2s cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+        z-index: 1000;
+    }
+
+    .ball-container {
+        transition: opacity 0.3s ease-in-out;
+    }
+`;
+document.head.appendChild(style);
+
 // Stockage des valeurs précédentes pour détecter les changements
 let previousStatsValues = {};
 let previousPossession = null;
+
+/**
+ * Affiche une animation furtive lors d'un changement de quart-temps (Q2, Q3, Q4)
+ * @param {number} quarterNum - 2, 3 ou 4
+ */
+function showQuarterTransition(quarterNum) {
+    console.log('[QUARTER-ANIMATION] showQuarterTransition appelé pour Q'+quarterNum);
+
+    if (![2,3,4].includes(quarterNum)) return;
+    // Importer le CSS si pas déjà fait
+    if (!document.getElementById('quarter-transition-css')) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'css/quarter-transition.css';
+        link.id = 'quarter-transition-css';
+        document.head.appendChild(link);
+    }
+    // Supprimer un éventuel bandeau existant
+    const prev = document.getElementById('quarter-transition-banner');
+    if (prev) prev.remove();
+    // Créer le bandeau
+    const banner = document.createElement('div');
+    banner.id = 'quarter-transition-banner';
+    banner.className = 'quarter-transition';
+    banner.textContent = `Q${quarterNum}`;
+    document.body.appendChild(banner);
+    console.log('[QUARTER-ANIMATION] Bandeau injecté dans le DOM');
+    // Supprimer après l'animation (1.2s)
+    setTimeout(() => {
+        banner.remove();
+        console.log('[QUARTER-ANIMATION] Bandeau retiré du DOM');
+    }, 1300);
+}
+
 
 /**
  * Initialisation des animations
@@ -75,51 +135,7 @@ function highlightChangedCell(cell) {
     // Appliquer l'animation de highlight
     cell.classList.add('stat-highlight');
     
-    // Ajouter un texte +1, +2, etc. flottant au-dessus de la cellule si la valeur a augmenté
-    if (valueIncreased) {
-        const difference = newValue - prevValue;
-        if (difference > 0) {
-            // Créer un élément flottant pour montrer l'incrémentation
-            const floatingText = document.createElement('div');
-            floatingText.textContent = `+${difference}`;
-            floatingText.style.position = 'absolute';
-            floatingText.style.top = '-20px';
-            floatingText.style.left = '50%';
-            floatingText.style.transform = 'translateX(-50%)';
-            floatingText.style.color = 'gold';
-            floatingText.style.fontWeight = 'bold';
-            floatingText.style.textShadow = '0 0 3px black';
-            floatingText.style.zIndex = '100';
-            floatingText.style.pointerEvents = 'none';
-            floatingText.style.animation = 'float-up 1.5s ease-out forwards';
-            
-            // Ajouter le style d'animation s'il n'existe pas déjà
-            if (!document.querySelector('#float-animation')) {
-                const style = document.createElement('style');
-                style.id = 'float-animation';
-                style.innerHTML = `
-                    @keyframes float-up {
-                        0% { opacity: 1; transform: translate(-50%, 0); }
-                        100% { opacity: 0; transform: translate(-50%, -30px); }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-            
-            // Position relative pour le parent
-            cell.style.position = 'relative';
-            
-            // Ajouter l'élément au DOM
-            cell.appendChild(floatingText);
-            
-            // Supprimer l'élément après l'animation
-            setTimeout(() => {
-                if (floatingText.parentNode === cell) {
-                    cell.removeChild(floatingText);
-                }
-            }, 1500);
-        }
-    }
+
     
     // Retirer la classe après l'animation et restaurer les styles originaux
     setTimeout(() => {
@@ -204,26 +220,79 @@ function updatePossessionIndicator(possession) {
  * Cette fonction est appelée après chaque mise à jour des données
  * @param {Object} currentRow - Les données JSON de l'étape actuelle
  */
+/**
+ * Détecte si une action est un tir et de quel type
+ * @param {Object} evt - L'événement à analyser
+ * @returns {Object} - { isShooting: boolean, points: number }
+ */
+function detectShot(evt) {
+    console.log('[DEBUG] detectShot evt:', evt);
+    if (!evt) return { isShooting: false, points: 0 };
+
+    // Vérifier si c'est une action de tir
+    const isShooting = evt['commentaire-Situation'] === 'Shoot' || 
+                      (evt['commentaire-Situation'] && evt['commentaire-Situation'].includes('tir'));
+
+    if (!isShooting) return { isShooting: false, points: 0 };
+
+    // 1. Utiliser la colonne simplifiée pour les Shoot
+    if (evt['commentaire-Situation'] === 'Shoot') {
+        const points = parseInt(evt['Test 2-3 PT'], 10);
+        if (points === 2 || points === 3) {
+            return { isShooting: true, points };
+        }
+    }
+
+    // 2. Vérifier la différence de score
+    if (!Array.isArray(window.jsonData)) return { isShooting: true, points: 2 };
+
+    const currentStep = Number(evt['scoreboard-Etape'] || 0);
+    const team = evt['commentaire-Equipe'];
+    if (!team || isNaN(currentStep)) return { isShooting: true, points: 2 };
+
+    const prevEvt = window.jsonData.find(e => Number(e['scoreboard-Etape']) === currentStep - 1);
+    if (!prevEvt) return { isShooting: true, points: 2 };
+
+    const scoreKey = team === 'A' ? 'scoreboard-ScoreA' : 'scoreboard-ScoreB';
+    const prevScore = Number(prevEvt[scoreKey] || 0);
+    const curScore = Number(evt[scoreKey] || 0);
+    const diff = curScore - prevScore;
+
+    return { 
+        isShooting: true, 
+        points: diff === 3 ? 3 : 2
+    };
+}
+
+
+
 function applyVisualEffects(currentRow) {
+    console.log('[DEBUG] applyVisualEffects row:', currentRow);
+    if (!currentRow) return;
+
+    // Détecter le tir et son type
+    const { isShooting, points } = detectShot(currentRow);
+    const isThreePointer = points === 3;
+
+    // Mettre à jour l'indicateur de possession avec l'animation de tir si nécessaire
+    const team = currentRow['commentaire-Equipe'];
+    if (team) {
+        console.log(`[DEBUG] updatePossessionIndicator(${team}, isShooting=${isShooting}, isThreePointer=${isThreePointer})`);
+        updatePossessionIndicator(team);
+
+    }
+
     // Mettre en évidence les cellules modifiées
     const statCells = document.querySelectorAll('#stats-table .team-a td:not(.player-name):not(.team-label), #stats-table .team-b td:not(.player-name):not(.team-label)');
     statCells.forEach(cell => {
         highlightChangedCell(cell);
         checkTOValue(cell);
     });
-    
-    // Mettre à jour l'indicateur de possession
-    // La possession est indiquée par la clé "commentaire-Equipe" dans le JSON
-    if (currentRow && currentRow.length > 109) {
-        const possession = currentRow[109];
-        if (possession === 'Home' || possession === 'Away') {
-            updatePossessionIndicator(possession);
-        }
-    }
 }
 
 // Exporter les fonctions pour utilisation dans d'autres scripts
 window.Animations = {
     applyVisualEffects,
-    initPreviousValues
+    initPreviousValues,
+    showQuarterTransition
 };

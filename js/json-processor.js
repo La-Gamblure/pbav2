@@ -243,6 +243,8 @@ function handleFileUpload(event) {
  * @param {number} rowIndex - Index de la ligne dans jsonData
  */
 // --- Dans updateDisplay(rowIndex) ---
+let previousQuarter = 'Q1';
+
 function updateDisplay(rowIndex) {
     try {
       if (rowIndex < 0 || rowIndex >= jsonData.length) {
@@ -253,6 +255,18 @@ function updateDisplay(rowIndex) {
   
       // Mise à jour des compteurs, scoreboard, etc.
       document.getElementById('current-step').textContent = rowIndex + 1;
+      // Détecter le changement de quart-temps (hors Q1)
+      const currentQuarter = row[COLUMNS.QUARTER] || 'Q1';
+      if (
+        typeof window.Animations?.showQuarterTransition === 'function' &&
+        previousQuarter !== currentQuarter &&
+        ['Q2', 'Q3', 'Q4'].includes(currentQuarter)
+      ) {
+        // Affiche l'animation stylisée
+        window.Animations.showQuarterTransition(parseInt(currentQuarter.replace('Q','')));
+      }
+      previousQuarter = currentQuarter;
+
       updateScoreboard(row);
       updatePossession(row);
   
@@ -261,6 +275,10 @@ function updateDisplay(rowIndex) {
   
       updatePlayerStats(row);
       computeAndMarkMVP();
+      // --- Ajout Cascade : animation visuelle à chaque étape ---
+      if (window.Animations && typeof window.Animations.applyVisualEffects === 'function') {
+        window.Animations.applyVisualEffects(row);
+      }
     } catch (err) {
       console.error('updateDisplay error:', err);
     }

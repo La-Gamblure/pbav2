@@ -274,7 +274,9 @@ function buildComment(evt, nextEvt) {
   
   if (!list) return '';
   let tpl = pick(list);
-  
+
+
+
   // Déterminer le bon nombre de points en regardant aussi l'événement suivant
   let points = detectShotType(evt);
   

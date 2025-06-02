@@ -1,0 +1,39 @@
+/* Animation bandeau changement de quart-temps */
+.quarter-transition {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    color: #fff;
+    font-size: 12vw;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 24px rgba(0,0,0,0.30);
+    padding: 0.2em 0.8em;
+    border-radius: 0.3em;
+    background: rgba(30,30,30,0.15);
+    opacity: 0;
+    z-index: 3000;
+    pointer-events: none;
+    text-align: center;
+    animation: quarterUp 1.2s cubic-bezier(.77,0,.18,1) forwards;
+}
+
+@keyframes quarterUp {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(40px) scale(0.95);
+    }
+    15% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1.05);
+    }
+    80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(0.98);
+    }
+}
