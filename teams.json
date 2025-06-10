@@ -136,8 +136,8 @@
         "name": "Moon Dragons",
         "shortName": "Dragons",
         "logo": "moon-dragons-logo.png",
-        "primaryColor": "#153148",
-        "secondaryColor": "#F2A92D",
+        "primaryColor": "#F2A92D",
+        "secondaryColor": "#153148",
         "tertiaryColor": "#CA5213", 
         "font": "Cinzel",
         "players": [
@@ -147,8 +147,8 @@
         "name": "Rap-Thors",
         "shortName": "Thors",
         "logo": "rap-thors-logo.png",
-        "primaryColor": "#881422",
-        "secondaryColor": "#C3932D",
+        "primaryColor": "#172933",
+        "secondaryColor": "#881422",
         "tertiaryColor": "#CAC8BF", 
         "font": "Cinzel",
         "players": [
