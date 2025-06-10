@@ -148,8 +148,8 @@
         "shortName": "Thors",
         "logo": "rap-thors-logo.png",
         "primaryColor": "#881422",
-        "secondaryColor": "#172933",
-        "tertiaryColor": "#CAC8BF", 
+        "secondaryColor": "#CAC8BF",
+        "tertiaryColor": "#172933", 
         "font": "Cinzel",
         "players": [
           "backzylul", "Sphynx787", "lepil", "KiinKiin", "Wayk00"
