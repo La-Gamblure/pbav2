@@ -147,9 +147,9 @@
         "name": "Rap-Thors",
         "shortName": "Thors",
         "logo": "rap-thors-logo.png",
-        "primaryColor": "#881422",
-        "secondaryColor": "#C7C5BD",
-        "tertiaryColor": "#172933", 
+        "primaryColor": "#172933",
+        "secondaryColor": "#881422",
+        "tertiaryColor": "#C7C5BD", 
         "font": "Cinzel",
         "players": [
           "backzylul", "Sphynx787", "lepil", "KiinKiin", "Wayk00"
