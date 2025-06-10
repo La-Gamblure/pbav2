@@ -500,8 +500,8 @@ if (!isNaN(currentValue)) {
                 if (["TurnOvers", "DD", "TD"].includes(statType)) {
                     if (parseFloat(currentValue) !== 0) {
                         statElement.classList.add('active');
-                        // Ajout spécial pour les TurnOvers critiques (<= -9)
-                        if (statType === 'TurnOvers' && parseFloat(currentValue) <= -9) {
+                        // Ajout spécial pour les TurnOvers critiques (<= -5)
+                        if (statType === 'TurnOvers' && parseFloat(currentValue) <= -5) {
                             statElement.classList.add('critical');
                         } else {
                             statElement.classList.remove('critical');
