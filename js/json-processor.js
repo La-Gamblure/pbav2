@@ -497,20 +497,31 @@ if (!isNaN(currentValue)) {
                 // Mettre à jour le contenu
                 statElement.textContent = currentValue;
                 // CSS conditionnel pour TO, DD et TD
-                if (["TurnOvers", "DD", "TD"].includes(statType)) {
-                    if (parseFloat(currentValue) !== 0) {
-                        statElement.classList.add('active');
-                        // Ajout spécial pour les TurnOvers critiques (<= -5)
-                        if (statType === 'TurnOvers' && parseFloat(currentValue) > 4) {
-                            statElement.classList.add('critical');
-                        } else {
-                            statElement.classList.remove('critical');
-                        }
-                    } else {
-                        statElement.classList.remove('active');
-                        statElement.classList.remove('critical');
-                    }
-                }
+               if (["TurnOvers", "DD", "TD"].includes(statType)) {
+    if (parseFloat(currentValue) !== 0) {
+        statElement.classList.add('active');
+
+        // -------- zone TurnOvers --------
+        if (statType === 'TurnOvers' && parseFloat(currentValue) > 4) {
+            statElement.classList.add('critical');
+        } else {
+            statElement.classList.remove('critical');
+        }
+
+        /* **** AJOUT MINIMAL ↓↓↓ **** */
+        if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
+            statElement.classList.add('mega-critical');
+        } else {
+            statElement.classList.remove('mega-critical');
+        }
+        /* **** AJOUT MINIMAL ↑↑↑ **** */
+
+    } else {
+        statElement.classList.remove('active');
+        statElement.classList.remove('critical');
+        statElement.classList.remove('mega-critical');   // on nettoie aussi ici
+    }
+}
                 
                 // Si la valeur a augmenté, appliquer l'animation de mise en évidence
                 if (currentValue > previousValue) {
