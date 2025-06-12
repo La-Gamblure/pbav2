@@ -263,11 +263,9 @@
     border: 2px solid #ff6b6b;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
-.turnover.mega-critical {
-    /* fond blanc + rouge « néon » */
-    background-color: #fff !important;
-    color: #e60023 !important;        /* rouge vif */
-    font-weight: 700;
+.turnover.critical.mega-critical {
+    background-color: #fff !important;      /* fond blanc */
+    color: #e60023 !important;              /* rouge vif */
     border: 2px solid #e60023;
     text-shadow:
         0 0 4px  #e60023,
@@ -275,14 +273,7 @@
         0 0 12px #e60023,
         0 0 16px #e60023;
     box-shadow: 0 0 12px rgba(230, 0, 35, 0.7);
-    animation: megaPulse 1.2s infinite;  /* halo pulsant */
-}
-
-/* Animation halo rouge « luminescent » */
-@keyframes megaPulse {
-    0%   { box-shadow: 0 0 8px  rgba(230,0,35,0.6); }
-    50%  { box-shadow: 0 0 20px rgba(230,0,35,0.9); }
-    100% { box-shadow: 0 0 8px  rgba(230,0,35,0.6); }
+    animation: megaPulse 1.2s infinite;     /* même anim que ta règle .mega-critical */
 }
 
 .doubledouble {
