@@ -381,16 +381,19 @@
     position: relative;
 }
 
-/* Override spécifique pour stat-overTop1 */
-.stat-overTop1.on-fire {
+/* Override spécifique pour good et great */
+.good.on-fire,
+.great.on-fire {
     background: linear-gradient(45deg, #ff6b35, #ff9558, #ffab00) !important;
     color: #000000 !important;
     border: 2px solid #ff6b35 !important;
 }
 
-/* Supprimer les pseudo-éléments de stat-overTop1 quand on-fire est actif */
-.stat-overTop1.on-fire::before,
-.stat-overTop1.on-fire::after {
+/* Supprimer les pseudo-éléments de good/great quand on-fire est actif */
+.good.on-fire::before,
+.good.on-fire::after,
+.great.on-fire::before,
+.great.on-fire::after {
     display: none !important;
 }
 
@@ -476,11 +479,20 @@
 }
 
 /* === Code couleur pour les stats === */
-/* Top 1% - Blanc sur vert (ancien style du 9e décile) */
-.stat-overTop1 {
+/* Good - Blanc sur vert */
+.good {
     background-color: #28a745 !important;
     color: #ffffff !important;
     font-weight: 800;
+    transition: all 0.3s ease;
+}
+
+/* Great - Vert sur fond blanc */
+.great {
+    background-color: #ffffff !important;
+    color: #28a745 !important;
+    border: 2px solid #28a745 !important;
+    font-weight: 900;
     transition: all 0.3s ease;
 }
 

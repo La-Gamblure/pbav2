@@ -538,9 +538,9 @@ if (!isNaN(currentValue)) {
                 // Mettre à jour le contenu
                 // Traitement spécial pour DD et TD
                 if (statType === 'DD' && parseFloat(currentValue) > 0) {
-                    statElement.textContent = '✅✅';
+                    statElement.textContent = '1';
                 } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
-                    statElement.textContent = '✅';
+                    statElement.textContent = '1';
                 } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
                     // Emoji biberon pour les TurnOvers mega-mega-critical
                     statElement.textContent = currentValue + ' 🍼';
@@ -694,62 +694,57 @@ async function loadStatsConfig() {
 }
 
 /**
- * Applique le code couleur pour les stats selon les seuils définis dans stats-css.json
+ * Applique le code couleur pour les stats selon la nouvelle logique
  */
 function applyStatColorCoding() {
-    if (!statsConfig || !statsConfig.thresholds) {
-        console.warn('Configuration des stats non chargée');
-        return;
-    }
-    
-    // Mapping entre les noms de colonnes HTML et les clés dans stats-css.json
-    const statMapping = {
-        'Points': 'PT',
-        '3-Points': '3PT',
-        'Rebounds': 'RB',
-        'Assist': 'AST',
-        'Blocks': 'BLK',
-        'Steals': 'STL',
-        'Total': 'Score'
-    };
-    
-    // Pour chaque type de stat
-    Object.keys(statMapping).forEach(statType => {
-        const configKey = statMapping[statType];
-        const thresholds = statsConfig.thresholds[configKey];
+    // Points : good si > 29 (on-fire si >= 40 est déjà géré ailleurs)
+    const pointsCells = document.querySelectorAll('[id$="-Points"]');
+    pointsCells.forEach(cell => {
+        const value = parseFloat(cell.textContent) || 0;
         
-        if (!thresholds) {
-            console.warn(`Pas de seuils définis pour ${configKey}`);
-            return;
+        // Retirer les classes précédentes
+        cell.classList.remove('good', 'great');
+        
+        // Si >= 40, on-fire prend le dessus (déjà géré)
+        // Sinon, appliquer good si > 29
+        if (value > 29 && value < 40) {
+            cell.classList.add('good');
         }
-        
-        // Sélectionner toutes les cellules de ce type de stat
+    });
+    
+    // RBD, AST, BLK, STL : good si > 9, great si > 14
+    const statTypes = ['Rebounds', 'Assist', 'Blocks', 'Steals'];
+    statTypes.forEach(statType => {
         const cells = document.querySelectorAll(`[id$="-${statType}"]`);
         
         cells.forEach(cell => {
-            // Ignorer les cellules TO, DD, TD qui ont leur propre style
-            if (cell.classList.contains('turnover') || 
-                cell.classList.contains('doubledouble') || 
-                cell.classList.contains('tripledouble')) {
-                return;
-            }
-            
             const value = parseFloat(cell.textContent) || 0;
             
             // Retirer les classes précédentes
-            cell.classList.remove('stat-overTop1');
+            cell.classList.remove('good', 'great');
             
-            // Pour les Points, si >= 40, on-fire remplace tout
-            if (statType === 'Points' && value >= 40) {
-                // Ne pas ajouter stat-overTop1 si on-fire est actif
-                return;
-            }
-            
-            // Appliquer la classe top1 si dépassement du seuil
-            if (value >= thresholds.overTop1) {
-                cell.classList.add('stat-overTop1');
+            // Appliquer les nouvelles classes selon les seuils
+            if (value > 14) {
+                cell.classList.add('great');
+            } else if (value > 9) {
+                cell.classList.add('good');
             }
         });
+    });
+    
+    // 3-Points : good si > 7, great si > 9
+    const threePtCells = document.querySelectorAll('[id$="-3-Points"]');
+    threePtCells.forEach(cell => {
+        const value = parseFloat(cell.textContent) || 0;
+        
+        // Retirer les classes précédentes
+        cell.classList.remove('good', 'great');
+        
+        if (value > 9) {
+            cell.classList.add('great');
+        } else if (value > 7) {
+            cell.classList.add('good');
+        }
     });
 }
 
@@ -789,7 +784,7 @@ function computeAndMarkMVP() {
     const rows = document.querySelectorAll(`#stats-table ${rowSelector}`);
     
     rows.forEach(tr => {
-        const totalCell = tr.querySelector('td:last-child');
+        const totalCell = tr.querySelector('.total-cell');
         const score = parseFloat(totalCell.textContent.replace(',', '.')) || 0;
         if (score > bestScore) {
             bestScore = score;
