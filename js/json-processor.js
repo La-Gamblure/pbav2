@@ -540,7 +540,7 @@ if (!isNaN(currentValue)) {
                 if (statType === 'DD' && parseFloat(currentValue) > 0) {
                     statElement.textContent = '1';
                 } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
-                    statElement.textContent = '1';
+                    statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span>';
                 } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
                     // Emoji biberon pour les TurnOvers mega-mega-critical
                     statElement.textContent = currentValue + ' 🍼';

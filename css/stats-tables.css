@@ -317,7 +317,21 @@
     border: 2px solid #1e7e34;
     box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
     animation: tdPulse 1.5s infinite;
+    position: relative;
 }
+
+/* Wrapper pour l'animation de l'étoile */
+@keyframes starSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Style spécifique pour l'étoile dans TD */
+.tripledouble.active {
+    overflow: visible;
+}
+
+/* On va animer l'étoile via JavaScript en ajoutant une span */
 
 @keyframes criticalPulse {
     0% {
