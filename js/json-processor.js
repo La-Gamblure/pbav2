@@ -749,6 +749,12 @@ function applyStatColorCoding() {
             // Retirer les classes précédentes
             cell.classList.remove('stat-d9', 'stat-overTop1');
             
+            // Pour les Points, si >= 40, on-fire remplace tout
+            if (statType === 'Points' && value >= 40) {
+                // Ne pas ajouter stat-overTop1 ou stat-d9 si on-fire est actif
+                return;
+            }
+            
             // Appliquer les nouvelles classes selon les seuils
             if (value >= thresholds.overTop1) {
                 cell.classList.add('stat-overTop1');

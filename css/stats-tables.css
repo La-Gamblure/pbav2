@@ -380,15 +380,28 @@
     }
 }
 
-/* Effet on-fire pour les points >= 40 */
+/* Effet on-fire pour les points >= 40 - priorité sur toutes les autres classes */
 .on-fire {
-    background: linear-gradient(45deg, #ff6b35, #ff9558, #ffab00);
+    background: linear-gradient(45deg, #ff6b35, #ff9558, #ffab00) !important;
     color: #000000 !important;
-    font-weight: 900;
-    border: 2px solid #ff6b35;
-    text-shadow: none;
-    animation: fireAnimation 0.8s ease-in-out infinite alternate;
+    font-weight: 900 !important;
+    border: 2px solid #ff6b35 !important;
+    text-shadow: none !important;
+    animation: fireAnimation 0.8s ease-in-out infinite alternate !important;
     position: relative;
+}
+
+/* Override spécifique pour stat-overTop1 */
+.stat-overTop1.on-fire {
+    background: linear-gradient(45deg, #ff6b35, #ff9558, #ffab00) !important;
+    color: #000000 !important;
+    border: 2px solid #ff6b35 !important;
+}
+
+/* Supprimer les pseudo-éléments de stat-overTop1 quand on-fire est actif */
+.stat-overTop1.on-fire::before,
+.stat-overTop1.on-fire::after {
+    display: none !important;
 }
 
 @keyframes fireAnimation {
@@ -533,18 +546,3 @@
     50% { opacity: 1; }
 }
 
-/* Étoile tournante pour les records */
-.stat-overTop1::after {
-    content: "⭐";
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    font-size: 12px;
-    animation: starRotate 3s linear infinite;
-    filter: drop-shadow(0 0 5px #28a745);
-}
-
-@keyframes starRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
