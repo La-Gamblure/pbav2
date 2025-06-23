@@ -544,6 +544,9 @@ if (!isNaN(currentValue)) {
                 } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 10) {
                     // Emoji biberon pour les TurnOvers mega-mega-critical
                     statElement.textContent = currentValue + ' 🍼';
+                } else if (statType === 'Points' && parseFloat(currentValue) >= 40) {
+                    // Emoji flamme pour les points >= 40
+                    statElement.textContent = currentValue + ' 🔥';
                 } else {
                     statElement.textContent = currentValue;
                 }

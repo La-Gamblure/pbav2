@@ -380,38 +380,15 @@
     }
 }
 
-/* Effet on-fire pour les points > 40 */
+/* Effet on-fire pour les points >= 40 */
 .on-fire {
     background: linear-gradient(45deg, #ff6b35, #ff9558, #ffab00);
-    color: #ffffff !important;
+    color: #000000 !important;
     font-weight: 900;
     border: 2px solid #ff6b35;
-    text-shadow: 
-        0 0 5px #ff6b35,
-        0 0 10px #ff9558,
-        0 0 15px #ffab00;
+    text-shadow: none;
     animation: fireAnimation 0.8s ease-in-out infinite alternate;
     position: relative;
-    overflow: hidden;
-}
-
-.on-fire::before {
-    content: "🔥";
-    position: absolute;
-    font-size: 0.8em;
-    opacity: 0.7;
-    animation: fireFloat 2s ease-in-out infinite;
-}
-
-.on-fire::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,171,0,0.3) 0%, transparent 70%);
-    animation: fireGlow 1.5s ease-in-out infinite;
 }
 
 @keyframes fireAnimation {
@@ -422,45 +399,6 @@
     100% {
         transform: scale(1.02);
         box-shadow: 0 0 30px rgba(255, 171, 0, 1);
-    }
-}
-
-@keyframes fireFloat {
-    0%, 100% {
-        top: -10px;
-        left: -10px;
-        transform: rotate(-15deg);
-    }
-    25% {
-        top: -5px;
-        right: -10px;
-        left: auto;
-        transform: rotate(15deg);
-    }
-    50% {
-        bottom: -10px;
-        top: auto;
-        right: -10px;
-        left: auto;
-        transform: rotate(-10deg);
-    }
-    75% {
-        bottom: -10px;
-        top: auto;
-        left: -10px;
-        right: auto;
-        transform: rotate(10deg);
-    }
-}
-
-@keyframes fireGlow {
-    0%, 100% {
-        opacity: 0.3;
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        opacity: 0.6;
-        transform: scale(1.1) rotate(180deg);
     }
 }
   
