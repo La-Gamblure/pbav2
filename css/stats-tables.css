@@ -321,25 +321,12 @@
 
 .tripledouble.active {
     /* Style quand différent de 0 */
-    background: linear-gradient(45deg, #ffd700, #ffeb3b);
-    color: #000000;
+    background: #28a745;
+    color: #ffffff;
     font-weight: bold;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
-    border: 2px solid #ffd740;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
-    animation: tdGlow 1.5s infinite alternate;
-    position: relative;
-}
-
-.tripledouble.active::after {
-    content: '★';
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ff9800;
-    font-size: 1.2em;
-    animation: starSpin 4s linear infinite;
+    border: 2px solid #1e7e34;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+    animation: tdPulse 1.5s infinite;
 }
 
 @keyframes criticalPulse {
@@ -363,21 +350,18 @@
     }
 }
 
-@keyframes tdGlow {
+@keyframes tdPulse {
     0% {
-        box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+        background-color: #28a745;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
+    }
+    50% {
+        background-color: #34ce57;
+        box-shadow: 0 0 25px rgba(40, 167, 69, 0.9);
     }
     100% {
-        box-shadow: 0 0 30px rgba(255, 215, 0, 1);
-    }
-}
-
-@keyframes starSpin {
-    0% {
-        transform: translateY(-50%) rotate(0deg);
-    }
-    100% {
-        transform: translateY(-50%) rotate(360deg);
+        background-color: #28a745;
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.7);
     }
 }
 
