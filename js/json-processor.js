@@ -547,8 +547,8 @@ if (!isNaN(currentValue)) {
                 } else {
                     statElement.textContent = currentValue;
                 }
-                // CSS conditionnel pour Points > 40 (on-fire)
-                if (statType === 'Points' && parseFloat(currentValue) > 40) {
+                // CSS conditionnel pour Points >= 40 (on-fire)
+                if (statType === 'Points' && parseFloat(currentValue) >= 40) {
                     statElement.classList.add('on-fire');
                 } else {
                     statElement.classList.remove('on-fire');
