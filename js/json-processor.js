@@ -542,8 +542,8 @@ if (!isNaN(currentValue)) {
                 } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
                     statElement.textContent = '✅';
                 } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 10) {
-                    // Emoji boisson pour les TurnOvers mega-mega-critical
-                    statElement.textContent = currentValue + ' 🥤';
+                    // Emoji biberon pour les TurnOvers mega-mega-critical
+                    statElement.textContent = currentValue + ' 🍼';
                 } else {
                     statElement.textContent = currentValue;
                 }
