@@ -1,0 +1,89 @@
+{
+  "description": "Mapping des colonnes pour le fichier Excel PBA",
+  "version": "2.0",
+  "lastUpdated": "2025-06-23",
+  
+  "baseColumns": {
+    "description": "Colonnes de base (non-statistiques)",
+    "columns": [
+      { "index": 0, "name": "scoreboard-QT", "excelColumn": "A", "description": "Quart-temps (Q1, Q2, Q3, Q4)" },
+      { "index": 1, "name": "scoreboard-Temps", "excelColumn": "B", "description": "Temps du match (mm:ss)" },
+      { "index": 2, "name": "scoreboard-Etape", "excelColumn": "C", "description": "Numéro de l'étape" },
+      { "index": 3, "name": "commentaire-Situation", "excelColumn": "D", "description": "Type d'action (Shoot, Pass, etc.)" },
+      { "index": 4, "name": "commentaire-Joueur", "excelColumn": "E", "description": "Joueur impliqué (A1-A5, B1-B5)" },
+      { "index": 5, "name": "commentaire-Equipe", "excelColumn": "F", "description": "Équipe (A ou B)" },
+      { "index": 6, "name": "Test 2-3 PT", "excelColumn": "G", "description": "Type de tir (2 ou 3 points)" },
+      { "index": 7, "name": "commentaire-Succes", "excelColumn": "H", "description": "Succès de l'action (Oui/Non)" }
+    ],
+    "note": "Les colonnes de score peuvent être présentes dans le fichier Excel original mais leur position varie"
+  },
+  
+  "playerStats": {
+    "description": "Statistiques par joueur",
+    "players": ["A1", "A2", "A3", "A4", "A5", "B1", "B2", "B3", "B4", "B5"],
+    "statsOrder": [
+      { "stat": "Points", "description": "Points marqués" },
+      { "stat": "3-Points", "description": "Tirs à 3 points réussis" },
+      { "stat": "Rebounds", "description": "Rebonds" },
+      { "stat": "Assist", "description": "Passes décisives" },
+      { "stat": "Blocks", "description": "Contres" },
+      { "stat": "Steals", "description": "Interceptions" },
+      { "stat": "TurnOvers", "description": "Pertes de balle" },
+      { "stat": "DD", "description": "Double-Double" },
+      { "stat": "TD", "description": "Triple-Double" },
+      { "stat": "Total", "description": "Score fantasy total" },
+      { "stat": "FG%", "description": "Pourcentage de réussite aux tirs (optionnel)" }
+    ]
+  },
+  
+  "excelMapping": {
+    "description": "Correspondance des colonnes Excel",
+    "startColumn": 10,
+    "example": {
+      "A1-Points": { "column": 10, "excelColumn": "I" },
+      "A1-3-Points": { "column": 11, "excelColumn": "J" },
+      "A1-Rebounds": { "column": 12, "excelColumn": "K" },
+      "A1-Assist": { "column": 13, "excelColumn": "L" },
+      "A1-Blocks": { "column": 14, "excelColumn": "M" },
+      "A1-Steals": { "column": 15, "excelColumn": "N" },
+      "A1-TurnOvers": { "column": 16, "excelColumn": "O" },
+      "A1-DD": { "column": 17, "excelColumn": "P" },
+      "A1-TD": { "column": 18, "excelColumn": "Q" },
+      "A1-Total": { "column": 19, "excelColumn": "R" },
+      "A1-FG%": { "column": 20, "excelColumn": "DI" }
+    }
+  },
+  
+  "htmlTableMapping": {
+    "description": "Ordre des colonnes dans le tableau HTML",
+    "headers": [
+      { "column": 0, "header": "STATS", "description": "Label de l'équipe" },
+      { "column": 1, "header": "Players", "description": "Nom du joueur" },
+      { "column": 2, "header": "PTS", "id": "Points" },
+      { "column": 3, "header": "3PT", "id": "3-Points" },
+      { "column": 4, "header": "RBD", "id": "Rebounds" },
+      { "column": 5, "header": "AST", "id": "Assist" },
+      { "column": 6, "header": "BLK", "id": "Blocks" },
+      { "column": 7, "header": "STL", "id": "Steals" },
+      { "column": 8, "header": "TO", "id": "TurnOvers" },
+      { "column": 9, "header": "DD", "id": "DD" },
+      { "column": 10, "header": "TD", "id": "TD" },
+      { "column": 11, "header": "TOTAL", "id": "Total" },
+      { "column": 12, "header": "FG%", "id": "FG%" }
+    ]
+  },
+  
+  "notes": {
+    "important": [
+      "L'ordre des colonnes dans statsOrder DOIT correspondre exactement à l'ordre dans le HTML",
+      "Les colonnes FG% sont optionnelles et seront ajoutées seulement si présentes dans le fichier Excel",
+      "Les colonnes de score (Score cumulé Equipe A/B) peuvent avoir des noms différents selon le fichier Excel",
+      "Chaque joueur a 11 colonnes de stats (10 + FG% optionnel)"
+    ],
+    "troubleshooting": [
+      "Si les stats sont décalées, vérifier l'ordre dans htmlTableMapping",
+      "Si les scores ne s'affichent pas, vérifier les noms des colonnes de score dans le fichier Excel",
+      "Les logs de la console montrent les colonnes détectées lors du chargement"
+    ]
+  }
+}

@@ -255,6 +255,13 @@ function updateDisplay(rowIndex) {
   
       // Mise à jour des compteurs, scoreboard, etc.
       document.getElementById('current-step').textContent = rowIndex + 1;
+      
+      // Vérifier si c'est la fin du match
+      if (row['scoreboard-Etape'] === 701 || row['commentaire-Situation'] === 'Fin du Match !') {
+          document.body.classList.add('match-ended');
+      } else {
+          document.body.classList.remove('match-ended');
+      }
       // Détecter le changement de quart-temps (hors Q1)
       const currentQuarter = row[COLUMNS.QUARTER] || 'Q1';
       if (
@@ -345,12 +352,36 @@ document.getElementById('timer').textContent = time;
 
 
     
-    // Mettre à jour le score de l'équipe A
-    const scoreA = row[COLUMNS.SCORE_TEAM_A] || 0;
+    // Debug : afficher les clés disponibles dans la première ligne
+    if (currentRowIndex === 0) {
+        console.log('=== DIAGNOSTIC DES COLONNES ===');
+        console.log('Colonnes disponibles dans les données:', Object.keys(row));
+        console.log('Recherche de:', COLUMNS.SCORE_TEAM_A, 'et', COLUMNS.SCORE_TEAM_B);
+        console.log('Exemple de données pour A1:', {
+            Points: row['A1-Points'],
+            '3-Points': row['A1-3-Points'],
+            'FG%': row['A1-FG%'],
+            Rebounds: row['A1-Rebounds']
+        });
+        console.log('Données complètes de la première ligne:', row);
+    }
+    
+    // Mettre à jour le score de l'équipe A - chercher dans plusieurs colonnes possibles
+    const scoreA = row[COLUMNS.SCORE_TEAM_A] || 
+                   row['Score cumulé Equipe A'] || 
+                   row['scoreboard-ScoreA'] || 
+                   row['Score Equipe A'] || 
+                   row['ScoreA'] || 
+                   0;
     document.getElementById('team-a-score').textContent = scoreA;
     
-    // Mettre à jour le score de l'équipe B
-    const scoreB = row[COLUMNS.SCORE_TEAM_B] || 0;
+    // Mettre à jour le score de l'équipe B - chercher dans plusieurs colonnes possibles
+    const scoreB = row[COLUMNS.SCORE_TEAM_B] || 
+                   row['Score cumulé Equipe B'] || 
+                   row['scoreboard-ScoreB'] || 
+                   row['Score Equipe B'] || 
+                   row['ScoreB'] || 
+                   0;
     document.getElementById('team-b-score').textContent = scoreB;
     
     // Mettre en évidence l'équipe qui mène
@@ -442,19 +473,24 @@ function updateTeamStats(row, team) {
     const teamPrefix = team.toUpperCase();
     console.log(`Début de mise à jour des stats pour l'équipe ${teamPrefix}:`);
     
-    // Types de statistiques dans l'ordre où elles apparaissent dans le tableau
+    // Types de statistiques dans l'ordre où elles apparaissent dans le tableau HTML
+    // IMPORTANT: Cet ordre DOIT correspondre EXACTEMENT à l'ordre des colonnes dans index.html
     const statTypes = [
-        'Points',
-        '3-Points',  // Correspond exactement au format des clés JSON
-        'Rebounds',
-        'Assist',
-        'Blocks', 
-        'Steals',
-        'TurnOvers',
-        'DD',
-        'TD',
-        'Total'
+        'Points',      // Colonne 3 (après Team Label et Player Name)
+        '3-Points',    // Colonne 4
+        'Rebounds',    // Colonne 5
+        'Assist',      // Colonne 6
+        'Blocks',      // Colonne 7
+        'Steals',      // Colonne 8
+        'TurnOvers',   // Colonne 9
+        'DD',          // Colonne 10
+        'TD',          // Colonne 11
+        'Total'        // Colonne 12
+        // FG% est traité séparément car dans une colonne très éloignée (DI)
     ];
+    
+    // Stats FG% à traiter séparément
+    const fgStatTypes = ['FG%', 'FGM', 'FGA', '3P%', '3PM', '3PA', '2P%', '2PM', '2PA'];
     
     // Pour afficher les clés JSON disponibles pour cette équipe
     const teamKeys = Object.keys(row).filter(key => key.startsWith(teamPrefix));
@@ -480,6 +516,11 @@ function updateTeamStats(row, team) {
                 continue; // Élément non trouvé, passer au suivant
             }
             
+            // FG% est traité séparément car dans une colonne très éloignée
+            if (statType === 'FG%') {
+                continue; // Skip FG% dans cette boucle
+            }
+            
             // Mettre à jour la cellule avec la valeur du JSON si elle existe
             if (row[idStat] !== undefined) {
                 // Récupérer la valeur actuelle (convertir en nombre pour la comparaison)
@@ -495,31 +536,52 @@ if (!isNaN(currentValue)) {
                 const previousValue = previousStatsValues[idStat] || 0;
                 
                 // Mettre à jour le contenu
-                statElement.textContent = currentValue;
+                // Traitement spécial pour DD et TD
+                if (statType === 'DD' && parseFloat(currentValue) > 0) {
+                    statElement.textContent = '✅✅';
+                } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
+                    statElement.textContent = '✅';
+                } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 10) {
+                    // Emoji boisson pour les TurnOvers mega-mega-critical
+                    statElement.textContent = currentValue + ' 🥤';
+                } else {
+                    statElement.textContent = currentValue;
+                }
                 // CSS conditionnel pour TO, DD et TD
                if (["TurnOvers", "DD", "TD"].includes(statType)) {
     if (parseFloat(currentValue) !== 0) {
         statElement.classList.add('active');
 
         // -------- zone TurnOvers --------
-        if (statType === 'TurnOvers' && parseFloat(currentValue) > 4) {
+        // Seuils basés sur les centiles : critical > 4.26, mega-critical > 7.4, mega-mega-critical > 10
+        if (statType === 'TurnOvers' && parseFloat(currentValue) > 4.26) {
             statElement.classList.add('critical');
+            
+            // Si encore plus haut que 7.4, c'est mega-critical
+            if (parseFloat(currentValue) > 7.4) {
+                statElement.classList.add('mega-critical');
+                
+                // Si encore plus haut que 10, c'est mega-mega-critical
+                if (parseFloat(currentValue) > 10) {
+                    statElement.classList.add('mega-mega-critical');
+                } else {
+                    statElement.classList.remove('mega-mega-critical');
+                }
+            } else {
+                statElement.classList.remove('mega-critical');
+                statElement.classList.remove('mega-mega-critical');
+            }
         } else {
             statElement.classList.remove('critical');
-        }
-
-        /* **** AJOUT MINIMAL ↓↓↓ **** */
-        if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
-            statElement.classList.add('mega-critical');
-        } else {
             statElement.classList.remove('mega-critical');
+            statElement.classList.remove('mega-mega-critical');
         }
-        /* **** AJOUT MINIMAL ↑↑↑ **** */
 
     } else {
         statElement.classList.remove('active');
         statElement.classList.remove('critical');
-        statElement.classList.remove('mega-critical');   // on nettoie aussi ici
+        statElement.classList.remove('mega-critical');
+        statElement.classList.remove('mega-mega-critical');   // on nettoie aussi ici
     }
 }
                 
@@ -556,6 +618,135 @@ if (!isNaN(currentValue)) {
     }
     
     console.log(`Statistiques mises à jour pour l'équipe ${teamPrefix}`);
+    
+    // Traiter FG% séparément (colonne éloignée dans Excel)
+    updateFGStatsForTeam(row, team);
+    
+    // Appliquer les codes couleur pour les stats
+    applyStatColorCoding();
+}
+
+/**
+ * Met à jour les stats FG% qui sont dans des colonnes éloignées (DI et après)
+ */
+function updateFGStatsForTeam(row, team) {
+    const teamPrefix = team.toUpperCase();
+    
+    for (let playerNum = 1; playerNum <= 5; playerNum++) {
+        const playerId = `${teamPrefix}${playerNum}`;
+        const fgElement = document.getElementById(`${playerId}-FG%`);
+        
+        if (!fgElement) continue;
+        
+        const fgPercent = row[`${playerId}-FG%`];
+        
+        // Debug log pour la première ligne
+        if (currentRowIndex === 0 && playerNum === 1) {
+            console.log(`Recherche FG% pour ${playerId}:`, fgPercent);
+            console.log('Clés disponibles contenant FG:', Object.keys(row).filter(k => k.includes('FG')));
+        }
+        
+        if (fgPercent !== undefined && fgPercent !== null && fgPercent !== '') {
+            let percentValue = parseFloat(fgPercent);
+            
+            // Si la valeur est entre 0 et 1, c'est un ratio qu'il faut convertir en pourcentage
+            if (percentValue >= 0 && percentValue <= 1) {
+                percentValue = percentValue * 100;
+            }
+            
+            fgElement.textContent = !isNaN(percentValue) ? `${percentValue.toFixed(1)}%` : '-';
+        } else {
+            fgElement.textContent = '-';
+        }
+    }
+}
+
+
+// Variable globale pour stocker les config de stats-css.json
+let statsConfig = null;
+
+/**
+ * Charge la configuration des stats depuis stats-css.json
+ */
+async function loadStatsConfig() {
+    try {
+        const response = await fetch('stats-css.json');
+        if (!response.ok) {
+            throw new Error('Impossible de charger stats-css.json');
+        }
+        statsConfig = await response.json();
+        console.log('Configuration des stats chargée:', statsConfig);
+    } catch (error) {
+        console.error('Erreur lors du chargement de stats-css.json:', error);
+        // Valeurs par défaut si le fichier n'est pas trouvé
+        statsConfig = {
+            thresholds: {
+                'PT': { d9: 26.00, overTop1: 28.83 },
+                '3PT': { d9: 4.00, overTop1: 4.92 },
+                'RB': { d9: 7.00, overTop1: 9.70 },
+                'AST': { d9: 9.47, overTop1: 10.60 },
+                'BLK': { d9: 2.96, overTop1: 3.60 },
+                'STL': { d9: 3.65, overTop1: 4.40 },
+                'Score': { d9: 61.37, overTop1: 78.14 }
+            }
+        };
+    }
+}
+
+/**
+ * Applique le code couleur pour les stats selon les seuils définis dans stats-css.json
+ */
+function applyStatColorCoding() {
+    if (!statsConfig || !statsConfig.thresholds) {
+        console.warn('Configuration des stats non chargée');
+        return;
+    }
+    
+    // Mapping entre les noms de colonnes HTML et les clés dans stats-css.json
+    const statMapping = {
+        'Points': 'PT',
+        '3-Points': '3PT',
+        'Rebounds': 'RB',
+        'Assist': 'AST',
+        'Blocks': 'BLK',
+        'Steals': 'STL',
+        'Total': 'Score'
+    };
+    
+    // Pour chaque type de stat
+    Object.keys(statMapping).forEach(statType => {
+        const configKey = statMapping[statType];
+        const thresholds = statsConfig.thresholds[configKey];
+        
+        if (!thresholds) {
+            console.warn(`Pas de seuils définis pour ${configKey}`);
+            return;
+        }
+        
+        // Sélectionner toutes les cellules de ce type de stat
+        const cells = document.querySelectorAll(`[id$="-${statType}"]`);
+        
+        cells.forEach(cell => {
+            // Ignorer les cellules TO, DD, TD qui ont leur propre style
+            if (cell.classList.contains('turnover') || 
+                cell.classList.contains('doubledouble') || 
+                cell.classList.contains('tripledouble')) {
+                return;
+            }
+            
+            const value = parseFloat(cell.textContent) || 0;
+            
+            // Retirer les classes précédentes
+            cell.classList.remove('stat-d9', 'stat-overTop1');
+            
+            // Appliquer les nouvelles classes selon les seuils
+            if (value >= thresholds.overTop1) {
+                cell.classList.add('stat-overTop1');
+            } else if (value >= thresholds.d9) {
+                cell.classList.add('stat-d9');
+            }
+        });
+    });
 }
 
 /**
@@ -821,7 +1012,10 @@ function selectTeamsByNames(teamAName, teamBName) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Charger la configuration des stats
+    await loadStatsConfig();
+    
     // Écouteur d'événement pour le chargement du fichier Excel
     const excelUpload = document.getElementById('excel-upload');
     if (excelUpload) {

@@ -108,40 +108,97 @@ async function transformExcel(input, options = {}) {
     const df = worksheet.getCell('DF2');
     if (df && df.value === 0) df.value = '';
 
-    // 6) Mapping standard des en-têtes pour compatibilité lecteur
-    // On suppose que les colonnes après les commentaires sont les joueurs (A1...A5, B1...B5, etc.)
-    // et que la première ligne contient les types de stats (Points, 3-Points, Rebounds, ...)
-
-    // Exemple d'ordre attendu :
-    // [scoreboard-QT, scoreboard-Temps, scoreboard-Etape, commentaire-Situation, commentaire-Joueur, commentaire-Equipe, commentaire-Succes,
-    //  A1-Points, A1-3-Points, ..., B5-Total]
-
-    // On définit ici le mapping des en-têtes attendus
+    // 6) Analyser et mapper les colonnes existantes
+    console.log('Analyse des colonnes du fichier Excel...');
+    
+    // Récupérer la première ligne pour analyser les colonnes existantes
+    const firstRow = worksheet.getRow(1);
+    const existingHeaders = [];
+    firstRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+      existingHeaders[colNumber - 1] = cell.value || '';
+    });
+    
+    console.log('Colonnes existantes:', existingHeaders.slice(0, 20));
+    
+    // Définir les colonnes de base (non-stats)
+    // Colonnes A-H dans Excel (indices 0-7)
+    const baseHeaders = [
+      'scoreboard-QT',           // A
+      'scoreboard-Temps',        // B
+      'scoreboard-Etape',        // C
+      'commentaire-Situation',   // D
+      'commentaire-Joueur',      // E
+      'commentaire-Equipe',      // F
+      'Test 2-3 PT',            // G
+      'commentaire-Succes'       // H
+    ];
+    
+    // NE PAS ajouter de colonnes de score artificiellement
+    // Les colonnes de score doivent être présentes dans le fichier Excel original
+    console.log('Recherche des colonnes de score dans le fichier Excel...');
+    let hasScoreColumns = false;
+    
+    // Chercher si des colonnes de score existent déjà
+    existingHeaders.forEach((header, idx) => {
+      if (header && (header.includes('Score') || header.includes('score'))) {
+        console.log(`Colonne de score trouvée: "${header}" à l'index ${idx}`);
+        hasScoreColumns = true;
+      }
+    });
+    
+    if (!hasScoreColumns) {
+      console.log('ATTENTION: Aucune colonne de score trouvée dans le fichier Excel');
+      console.log('Les scores ne seront pas affichés dans le scoreboard');
+    }
+    
+    // Définir l'ordre des stats pour chaque joueur
     const statTypes = [
       'Points', '3-Points', 'Rebounds', 'Assist', 'Blocks', 'Steals', 'TurnOvers', 'DD', 'TD', 'Total'
     ];
+    
+    // Les colonnes FG% sont très loin (DI et après), on les traite séparément
+    // Pour l'instant, on ne les ajoute PAS dans statTypes car elles sont trop éloignées
+    console.log('Note: Les colonnes FG% (DI-DR) seront traitées séparément si présentes');
+    
+    // Créer la liste des joueurs
     const playerIds = [];
     for (let t of ['A', 'B']) {
       for (let i = 1; i <= 5; i++) playerIds.push(`${t}${i}`);
     }
 
     // Construction de la nouvelle ligne d'en-têtes
-    const headers = [
-      'scoreboard-QT', 'scoreboard-Temps', 'scoreboard-Etape',
-      'commentaire-Situation', 'commentaire-Joueur', 'commentaire-Equipe', 'Test 2-3 PT', 'commentaire-Succes'
-    ];
+    const headers = [...baseHeaders];
     for (const pid of playerIds) {
       for (const stat of statTypes) {
         headers.push(`${pid}-${stat}`);
       }
     }
+    
+    console.log('Nouvel ordre des colonnes:', headers.slice(0, 20), '...');
 
-    // Remplacer l'en-tête sans réallouer toutes les colonnes (optimisé)
+    // Remplacer l'en-tête avec le nouveau mapping
     const row1 = worksheet.getRow(1);
     headers.forEach((h, idx) => {
       row1.getCell(idx + 1).value = h;
     });
+    
+    // Mapping spécial pour les colonnes FG% (DI à DR)
+    // DI = colonne 113 (index 112)
+    const fgStartColumn = 113; // Colonne DI
+    let fgIndex = 0;
+    
+    // Mapper les colonnes FG% pour chaque joueur
+    for (const pid of playerIds) {
+      const columnIndex = fgStartColumn + fgIndex;
+      const cell = row1.getCell(columnIndex);
+      cell.value = `${pid}-FG%`;
+      console.log(`Mapping FG%: ${pid}-FG% → colonne ${columnIndex} (${String.fromCharCode(64 + Math.floor((columnIndex - 1) / 26)) + String.fromCharCode(65 + ((columnIndex - 1) % 26))})`);
+      fgIndex++;
+    }
+    
     row1.commit();
+    
+    console.log('Total de colonnes mappées:', headers.length + ' + 10 colonnes FG%');
 
     // Stocker les noms d'équipes dans le workbook pour les récupérer plus tard
     workbook.teamNames = teamNames;
@@ -184,12 +241,19 @@ function workbookToJson(workbook) {
     }
 
     // Extraire en-têtes SANS normalisation (on garde la casse et les tirets)
+    // Forcer la lecture jusqu'à la colonne DR (122) pour inclure les FG%
     const headers = [];
-    worksheet.getRow(1).eachCell({ includeEmpty: true }, (cell, col) => {
+    const maxColumns = 122; // Jusqu'à la colonne DR
+    
+    for (let col = 1; col <= maxColumns; col++) {
+      const cell = worksheet.getRow(1).getCell(col);
       let h = String(cell.value || '').trim();
       if (!h) h = `Column${col}`;
-      headers[col] = h; // pas de normalizeCssId
-    });
+      headers[col] = h;
+    }
+    
+    console.log(`Headers extraits (${headers.length} colonnes)`);
+    console.log('Colonnes FG%:', headers.slice(112, 123)); // DI à DR
 
     const data = [];
     // Parcourir lignes à partir de la 2
@@ -197,14 +261,22 @@ function workbookToJson(workbook) {
       const row = worksheet.getRow(r);
       const obj = {};
       let has = false;
-      row.eachCell({ includeEmpty: false }, (cell, col) => {
+      
+      // Lire toutes les colonnes jusqu'à maxColumns
+      for (let col = 1; col <= maxColumns; col++) {
         const key = headers[col];
+        if (!key) continue;
+        
+        const cell = row.getCell(col);
         let val = cell.value;
+        
         if (val && val.richText) val = val.richText.map(t => t.text).join('');
         else if (val && val.formula) val = val.result;
+        
         obj[key] = val == null ? '' : val;
         if (obj[key] !== '') has = true;
-      });
+      }
+      
       if (has) data.push(obj);
     }
 

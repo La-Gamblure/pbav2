@@ -1,0 +1,36 @@
+{
+    "classes": {
+      "moyenne": {
+        "label": "Moyenne",
+        "css": {
+          "color": "#ffffff",
+          "background": "#28a745"        /* blanc sur fond vert */
+        }
+      },
+      "d9": {
+        "label": "9ᵉ décile",
+        "css": {
+          "color": "#28a745",
+          "background": "#ffffff"        /* vert sur fond blanc */
+        }
+      },
+      "overTop1": {
+        "label": "Top 1 %",
+        "css": {
+          "color": "#002147",
+          "background": "#ffffff"        /* bleu marine (lumineux) sur fond blanc */
+        }
+      }
+    },
+  
+    "thresholds": {
+      "PT":   { "moyenne": 21.70, "d9": 26.00, "overTop1": 28.83 },
+      "3PT":  { "moyenne":  3.14, "d9":  4.00, "overTop1":  4.92 },
+      "RB":   { "moyenne":  4.27, "d9":  7.00, "overTop1":  9.70 },
+      "AST":  { "moyenne":  8.27, "d9":  9.47, "overTop1": 10.60 },
+      "BLK":  { "moyenne":  1.81, "d9":  2.96, "overTop1":  3.60 },
+      "STL":  { "moyenne":  2.48, "d9":  3.65, "overTop1":  4.40 },
+      "Score":{ "moyenne": 50.62, "d9": 61.37, "overTop1": 78.14 }
+    }
+  }
+  

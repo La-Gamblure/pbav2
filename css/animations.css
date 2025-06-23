@@ -48,5 +48,23 @@
     z-index: 10; /* Z-index élevé pour être au-dessus des autres éléments */
     font-weight: 800 !important; /* Force le gras pendant l'animation */
     transition: all 0.3s ease;
+    overflow: hidden; /* Empêche les débordements visuels */
     /* Ne change pas la couleur de fond/texte pour conserver les styles d'équipe */
+}
+
+/* Correction pour éviter les glitches de barre noire */
+#stats-table {
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+.stats-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Empêcher les débordements d'animation sur les cellules */
+#stats-table td {
+    overflow: hidden;
+    position: relative;
 }

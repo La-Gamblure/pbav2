@@ -268,12 +268,21 @@
     color: #e60023 !important;              /* rouge vif */
     border: 2px solid #e60023;
     text-shadow:
-        0 0 4px  #e60023,
-        0 0 8px  #e60023,
-        0 0 12px #e60023,
-        0 0 16px #e60023;
-    box-shadow: 0 0 12px rgba(230, 0, 35, 0.7);
+        0 0 2px  #e60023,
+        0 0 4px  #e60023;
+    box-shadow: 0 0 8px rgba(230, 0, 35, 0.5);
     animation: megaPulse 1.2s infinite;     /* même anim que ta règle .mega-critical */
+}
+
+.turnover.critical.mega-critical.mega-mega-critical {
+    background-color: #fff !important;      /* fond blanc */
+    color: #ff0000 !important;              /* rouge pur */
+    border: 3px solid #ff0000;
+    text-shadow:
+        0 0 2px  #ff0000,
+        0 0 4px  #ff0000;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+    animation: megaMegaPulse 0.8s infinite;
 }
 
 .doubledouble {
@@ -371,6 +380,21 @@
         transform: translateY(-50%) rotate(360deg);
     }
 }
+
+@keyframes megaMegaPulse {
+    0% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 0 40px rgba(255, 0, 0, 1);
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.9);
+        transform: scale(1);
+    }
+}
   
   /* noms des joueurs */
   .player-name {
@@ -434,4 +458,87 @@
 
 .team-b-table{
     border: 4px solid var(--team-b-secondary);
+}
+
+/* === Styles pour les cellules FG% === */
+.fg-percent {
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+/* === Code couleur pour les stats === */
+/* 90e centile - Blanc sur vert */
+.stat-d9 {
+    background-color: #28a745 !important;
+    color: #ffffff !important;
+    font-weight: 800;
+    transition: all 0.3s ease;
+}
+
+/* Top 1% - Vert lumineux sur blanc avec halo pulsant */
+.stat-overTop1 {
+    background-color: #ffffff !important;
+    color: #28a745 !important;
+    border: 2px solid #28a745 !important;
+    font-weight: 900;
+    position: relative;
+    animation: recordPulse 1.5s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+    transform-style: preserve-3d;
+}
+
+/* Animation de halo pulsant pour les records */
+@keyframes recordPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.9),
+                    0 0 20px rgba(40, 167, 69, 0.6),
+                    inset 0 0 10px rgba(40, 167, 69, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px 15px rgba(40, 167, 69, 0.6),
+                    0 0 50px 25px rgba(40, 167, 69, 0.3),
+                    inset 0 0 20px rgba(40, 167, 69, 0.4);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.9),
+                    0 0 20px rgba(40, 167, 69, 0.6),
+                    inset 0 0 10px rgba(40, 167, 69, 0.3);
+    }
+}
+
+/* Effet de halo lumineux supplémentaire */
+.stat-overTop1::before {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(circle, rgba(40, 167, 69, 0.5) 0%, transparent 70%);
+    border-radius: 4px;
+    opacity: 0;
+    animation: haloGlow 1.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: -1;
+}
+
+@keyframes haloGlow {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Étoile tournante pour les records */
+.stat-overTop1::after {
+    content: "⭐";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 12px;
+    animation: starRotate 3s linear infinite;
+    filter: drop-shadow(0 0 5px #28a745);
+}
+
+@keyframes starRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
