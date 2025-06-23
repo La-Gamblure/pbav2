@@ -535,26 +535,46 @@ if (!isNaN(currentValue)) {
                 // Récupérer la valeur précédente si elle existe
                 const previousValue = previousStatsValues[idStat] || 0;
                 
-                // Mettre à jour le contenu
-                // Traitement spécial pour DD et TD
-                if (statType === 'DD' && parseFloat(currentValue) > 0) {
-                    statElement.textContent = '1';
-                } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
-                    statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span>';
-                } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
-                    // Emoji biberon pour les TurnOvers mega-mega-critical
-                    statElement.textContent = currentValue + ' 🍼';
-                } else if (statType === 'Points' && parseFloat(currentValue) >= 40) {
-                    // Emoji flamme pour les points >= 40
-                    statElement.textContent = currentValue + ' 🔥';
-                } else {
-                    statElement.textContent = currentValue;
-                }
-                // CSS conditionnel pour Points >= 40 (on-fire)
-                if (statType === 'Points' && parseFloat(currentValue) >= 40) {
-                    statElement.classList.add('on-fire');
-                } else {
-                    statElement.classList.remove('on-fire');
+                // Vérifier les records AVANT de définir le contenu
+                const isRecord = checkForRecords(statElement, statType, parseFloat(currentValue), playerId);
+                
+                // Vérifier aussi si c'était déjà marqué comme record
+                const recordId = `${playerId}-${statType}`;
+                const wasAlreadyRecord = recordsBroken.has(recordId);
+                
+                // Mettre à jour le contenu SEULEMENT si ce n'est pas un record (car checkForRecords l'a déjà fait)
+                if (!isRecord && !wasAlreadyRecord) {
+                    // Traitement spécial pour DD et TD
+                    if (statType === 'DD' && parseFloat(currentValue) > 0) {
+                        statElement.textContent = '1';
+                    } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
+                        statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span>';
+                    } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
+                        // Emoji biberon pour les TurnOvers mega-mega-critical
+                        statElement.textContent = currentValue + ' 🍼';
+                    } else if (statType === 'Points' && parseFloat(currentValue) >= 40) {
+                        statElement.classList.add('on-fire');
+                        statElement.textContent = currentValue + ' 🔥';
+                    } else {
+                        statElement.textContent = currentValue;
+                    }
+                    
+                    // CSS conditionnel pour Points >= 40 (on-fire)
+                    if (statType === 'Points' && parseFloat(currentValue) >= 40) {
+                        statElement.classList.add('on-fire');
+                    } else {
+                        statElement.classList.remove('on-fire');
+                    }
+                } else if (wasAlreadyRecord && !isRecord) {
+                    // C'était déjà un record, on garde le trophée
+                    statElement.classList.add('newrecord');
+                    if (statType === 'TD') {
+                        statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span> 🏆';
+                    } else if (statType === 'DD') {
+                        statElement.innerHTML = '1 🏆';
+                    } else {
+                        statElement.textContent = currentValue + ' 🏆';
+                    }
                 }
                 
                 // CSS conditionnel pour TO, DD et TD
@@ -665,6 +685,12 @@ function updateFGStatsForTeam(row, team) {
 // Variable globale pour stocker les config de stats-css.json
 let statsConfig = null;
 
+// Variable globale pour stocker les records
+let recordsData = null;
+
+// Variable pour tracker les records déjà battus dans cette session
+let recordsBroken = new Set();
+
 /**
  * Charge la configuration des stats depuis stats-css.json
  */
@@ -694,12 +720,32 @@ async function loadStatsConfig() {
 }
 
 /**
+ * Charge les records depuis records.json
+ */
+async function loadRecords() {
+    try {
+        const response = await fetch('/records.json');
+        if (!response.ok) {
+            throw new Error('Impossible de charger records.json');
+        }
+        recordsData = await response.json();
+        console.log('Records chargés:', recordsData);
+    } catch (error) {
+        console.error('Erreur lors du chargement de records.json:', error);
+        recordsData = null;
+    }
+}
+
+/**
  * Applique le code couleur pour les stats selon la nouvelle logique
  */
 function applyStatColorCoding() {
     // Points : good si > 29 (on-fire si >= 40 est déjà géré ailleurs)
     const pointsCells = document.querySelectorAll('[id$="-Points"]');
     pointsCells.forEach(cell => {
+        // Ne pas appliquer si newrecord est présent
+        if (cell.classList.contains('newrecord')) return;
+        
         const value = parseFloat(cell.textContent) || 0;
         
         // Retirer les classes précédentes
@@ -718,6 +764,9 @@ function applyStatColorCoding() {
         const cells = document.querySelectorAll(`[id$="-${statType}"]`);
         
         cells.forEach(cell => {
+            // Ne pas appliquer si newrecord est présent
+            if (cell.classList.contains('newrecord')) return;
+            
             const value = parseFloat(cell.textContent) || 0;
             
             // Retirer les classes précédentes
@@ -735,6 +784,9 @@ function applyStatColorCoding() {
     // 3-Points : good si > 7, great si > 9
     const threePtCells = document.querySelectorAll('[id$="-3-Points"]');
     threePtCells.forEach(cell => {
+        // Ne pas appliquer si newrecord est présent
+        if (cell.classList.contains('newrecord')) return;
+        
         const value = parseFloat(cell.textContent) || 0;
         
         // Retirer les classes précédentes
@@ -746,6 +798,151 @@ function applyStatColorCoding() {
             cell.classList.add('good');
         }
     });
+}
+
+/**
+ * Crée un effet de confettis
+ */
+function createConfetti() {
+    const colors = ['#FFD700', '#FFA500', '#FF69B4', '#00CED1', '#98FB98', '#FF6347'];
+    const confettiCount = 50;
+    
+    for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            document.body.appendChild(confetti);
+            
+            // Retirer après l'animation
+            setTimeout(() => confetti.remove(), 3000);
+        }, i * 30);
+    }
+}
+
+/**
+ * Crée un feu d'artifice à une position donnée
+ */
+function createSingleFirework(x, y) {
+    const colors = ['#FFD700', '#FF69B4', '#00CED1', '#98FB98', '#FF6347', '#9370DB', '#FF1493'];
+    const particleCount = 30;
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = x + 'px';
+    container.style.top = y + 'px';
+    container.style.zIndex = '9998';
+    document.body.appendChild(container);
+    
+    // Créer l'explosion
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'firework-particle';
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        
+        // Calculer la direction de l'explosion
+        const angle = (360 / particleCount) * i;
+        const velocity = 100 + Math.random() * 100;
+        const radian = angle * Math.PI / 180;
+        const vx = Math.cos(radian) * velocity;
+        const vy = Math.sin(radian) * velocity;
+        
+        particle.style.transform = `translate(${vx}px, ${vy}px)`;
+        particle.style.boxShadow = `0 0 10px ${particle.style.backgroundColor}`;
+        
+        container.appendChild(particle);
+    }
+    
+    // Retirer après l'animation
+    setTimeout(() => container.remove(), 1000);
+}
+
+/**
+ * Lance plusieurs feux d'artifice sur tout l'écran
+ */
+function createFireworks() {
+    const fireworksCount = 8;
+    
+    for (let i = 0; i < fireworksCount; i++) {
+        setTimeout(() => {
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * (window.innerHeight * 0.6); // Concentrer dans la partie haute
+            createSingleFirework(x, y);
+        }, i * 300);
+    }
+}
+
+/**
+ * Affiche un popup pour nouveau record
+ */
+function showRecordPopup(statType, playerName, value) {
+    const popup = document.createElement('div');
+    popup.className = 'record-popup';
+    popup.textContent = '🏆 NOUVEAU RECORD! 🏆';
+    document.body.appendChild(popup);
+    
+    // Retirer après 3 secondes
+    setTimeout(() => popup.remove(), 3000);
+}
+
+/**
+ * Vérifie si un record est battu
+ */
+function checkForRecords(statElement, statType, value, playerId) {
+    if (!recordsData) return false;
+    
+    // Mapping des types de stats vers les clés dans records.json
+    const recordMapping = {
+        'Points': 'PTS',
+        '3-Points': '3PT',
+        'Rebounds': 'RDB',
+        'Assist': 'AST',
+        'Blocks': 'BLK',
+        'Steals': 'STL',
+        'TurnOvers': 'TO',
+        'Total': 'TOTAL'
+    };
+    
+    const recordKey = recordMapping[statType];
+    if (!recordKey || !recordsData[recordKey]) return false;
+    
+    const recordValue = recordsData[recordKey];
+    const recordId = `${playerId}-${statType}`;
+    
+    // Vérifier si c'est un nouveau record et pas déjà enregistré
+    if (value > recordValue && !recordsBroken.has(recordId)) {
+        recordsBroken.add(recordId);
+        
+        // Ajouter la classe newrecord
+        statElement.classList.add('newrecord');
+        
+        // Retirer toutes les autres classes de style
+        statElement.classList.remove('good', 'great', 'on-fire', 'stat-d9', 'stat-overTop1');
+        
+        // Ajouter le trophée
+        if (statType === 'TD') {
+            statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span> 🏆';
+        } else if (statType === 'DD') {
+            statElement.innerHTML = '1 🏆';
+        } else {
+            statElement.innerHTML = value + ' 🏆';
+        }
+        
+        // Récupérer le nom du joueur
+        const playerRow = statElement.closest('tr');
+        const playerNameElement = playerRow.querySelector('.player-name');
+        const playerName = playerNameElement.textContent.replace('MVP', '').trim();
+        
+        // Effets visuels
+        createConfetti();
+        createFireworks();
+        showRecordPopup(statType, playerName, value);
+        
+        return true;
+    }
+    
+    return false;
 }
 
 /**
@@ -1014,6 +1211,9 @@ function selectTeamsByNames(teamAName, teamBName) {
 document.addEventListener('DOMContentLoaded', async function() {
     // Charger la configuration des stats
     await loadStatsConfig();
+    
+    // Charger les records
+    await loadRecords();
     
     // Écouteur d'événement pour le chargement du fichier Excel
     const excelUpload = document.getElementById('excel-upload');

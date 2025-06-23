@@ -333,6 +333,126 @@
 
 /* On va animer l'étoile via JavaScript en ajoutant une span */
 
+/* === Nouveau record === */
+.newrecord {
+    background: linear-gradient(45deg, #FFD700, #FFA500, #FFD700) !important;
+    color: #000000 !important;
+    font-weight: 900 !important;
+    border: 3px solid #FFD700 !important;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8) !important;
+    animation: recordPulse 1s ease-in-out infinite !important;
+    position: relative;
+    overflow: visible;
+}
+
+@keyframes recordPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(255, 215, 0, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+}
+
+/* Pop-up pour nouveau record */
+.record-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    color: #FFD700;
+    font-size: 72px;
+    font-weight: 900;
+    z-index: 10000;
+    text-shadow: 
+        3px 3px 0 #000,
+        -3px -3px 0 #000,
+        3px -3px 0 #000,
+        -3px 3px 0 #000,
+        0 0 30px #FFD700;
+    animation: popupAppear 0.5s ease-out;
+    text-align: center;
+    white-space: nowrap;
+}
+
+@keyframes popupAppear {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Effet confettis */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    z-index: 9999;
+    animation: confettiFall 3s linear forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Feu d'artifice */
+.firework {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: #FFD700;
+    border-radius: 50%;
+    z-index: 9998;
+    box-shadow: 0 0 10px #FFD700;
+}
+
+.firework-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    animation: explode 1s ease-out forwards;
+}
+
+@keyframes explode {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Container pour les feux d'artifice */
+.fireworks-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+}
+
 @keyframes criticalPulse {
     0% {
         box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
