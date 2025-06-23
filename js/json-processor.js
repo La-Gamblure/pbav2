@@ -541,7 +541,7 @@ if (!isNaN(currentValue)) {
                     statElement.textContent = '✅✅';
                 } else if (statType === 'TD' && parseFloat(currentValue) > 0) {
                     statElement.textContent = '✅';
-                } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 10) {
+                } else if (statType === 'TurnOvers' && parseFloat(currentValue) > 9) {
                     // Emoji biberon pour les TurnOvers mega-mega-critical
                     statElement.textContent = currentValue + ' 🍼';
                 } else if (statType === 'Points' && parseFloat(currentValue) >= 40) {
@@ -563,34 +563,24 @@ if (!isNaN(currentValue)) {
         statElement.classList.add('active');
 
         // -------- zone TurnOvers --------
-        // Seuils basés sur les centiles : critical > 4.26, mega-critical > 7.4, mega-mega-critical > 10
+        // Seuils basés sur les centiles : critical > 4.26, mega-mega-critical > 9
         if (statType === 'TurnOvers' && parseFloat(currentValue) > 4.26) {
             statElement.classList.add('critical');
             
-            // Si encore plus haut que 7.4, c'est mega-critical
-            if (parseFloat(currentValue) > 7.4) {
-                statElement.classList.add('mega-critical');
-                
-                // Si encore plus haut que 10, c'est mega-mega-critical
-                if (parseFloat(currentValue) > 10) {
-                    statElement.classList.add('mega-mega-critical');
-                } else {
-                    statElement.classList.remove('mega-mega-critical');
-                }
+            // Si encore plus haut que 9, c'est mega-mega-critical
+            if (parseFloat(currentValue) > 9) {
+                statElement.classList.add('mega-mega-critical');
             } else {
-                statElement.classList.remove('mega-critical');
                 statElement.classList.remove('mega-mega-critical');
             }
         } else {
             statElement.classList.remove('critical');
-            statElement.classList.remove('mega-critical');
             statElement.classList.remove('mega-mega-critical');
         }
 
     } else {
         statElement.classList.remove('active');
         statElement.classList.remove('critical');
-        statElement.classList.remove('mega-critical');
         statElement.classList.remove('mega-mega-critical');   // on nettoie aussi ici
     }
 }
@@ -747,19 +737,17 @@ function applyStatColorCoding() {
             const value = parseFloat(cell.textContent) || 0;
             
             // Retirer les classes précédentes
-            cell.classList.remove('stat-d9', 'stat-overTop1');
+            cell.classList.remove('stat-overTop1');
             
             // Pour les Points, si >= 40, on-fire remplace tout
             if (statType === 'Points' && value >= 40) {
-                // Ne pas ajouter stat-overTop1 ou stat-d9 si on-fire est actif
+                // Ne pas ajouter stat-overTop1 si on-fire est actif
                 return;
             }
             
-            // Appliquer les nouvelles classes selon les seuils
+            // Appliquer la classe top1 si dépassement du seuil
             if (value >= thresholds.overTop1) {
                 cell.classList.add('stat-overTop1');
-            } else if (value >= thresholds.d9) {
-                cell.classList.add('stat-d9');
             }
         });
     });

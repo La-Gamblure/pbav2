@@ -255,7 +255,7 @@
 }
 
 .turnover.critical {
-    /* Style quand <= -9 */
+    /* Style quand > 4.26 */
     background-color: #ff0000 !important;
     color: #ffffff;
     font-weight: bold;
@@ -263,18 +263,8 @@
     border: 2px solid #ff6b6b;
     box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
 }
-.turnover.critical.mega-critical {
-    background-color: #fff !important;      /* fond blanc */
-    color: #e60023 !important;              /* rouge vif */
-    border: 2px solid #e60023;
-    text-shadow:
-        0 0 2px  #e60023,
-        0 0 4px  #e60023;
-    box-shadow: 0 0 8px rgba(230, 0, 35, 0.5);
-    animation: megaPulse 1.2s infinite;     /* même anim que ta règle .mega-critical */
-}
 
-.turnover.critical.mega-critical.mega-mega-critical {
+.turnover.mega-mega-critical {
     background-color: #fff !important;      /* fond blanc */
     color: #ff0000 !important;              /* rouge pur */
     border: 3px solid #ff0000;
@@ -486,63 +476,12 @@
 }
 
 /* === Code couleur pour les stats === */
-/* 90e centile - Blanc sur vert */
-.stat-d9 {
+/* Top 1% - Blanc sur vert (ancien style du 9e décile) */
+.stat-overTop1 {
     background-color: #28a745 !important;
     color: #ffffff !important;
     font-weight: 800;
     transition: all 0.3s ease;
 }
 
-/* Top 1% - Vert lumineux sur blanc avec halo pulsant */
-.stat-overTop1 {
-    background-color: #ffffff !important;
-    color: #28a745 !important;
-    border: 2px solid #28a745 !important;
-    font-weight: 900;
-    position: relative;
-    animation: recordPulse 1.5s ease-in-out infinite;
-    text-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
-    transform-style: preserve-3d;
-}
-
-/* Animation de halo pulsant pour les records */
-@keyframes recordPulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.9),
-                    0 0 20px rgba(40, 167, 69, 0.6),
-                    inset 0 0 10px rgba(40, 167, 69, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 30px 15px rgba(40, 167, 69, 0.6),
-                    0 0 50px 25px rgba(40, 167, 69, 0.3),
-                    inset 0 0 20px rgba(40, 167, 69, 0.4);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.9),
-                    0 0 20px rgba(40, 167, 69, 0.6),
-                    inset 0 0 10px rgba(40, 167, 69, 0.3);
-    }
-}
-
-/* Effet de halo lumineux supplémentaire */
-.stat-overTop1::before {
-    content: "";
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: radial-gradient(circle, rgba(40, 167, 69, 0.5) 0%, transparent 70%);
-    border-radius: 4px;
-    opacity: 0;
-    animation: haloGlow 1.5s ease-in-out infinite;
-    pointer-events: none;
-    z-index: -1;
-}
-
-@keyframes haloGlow {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
-}
 
