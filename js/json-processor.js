@@ -566,14 +566,29 @@ if (!isNaN(currentValue)) {
                         statElement.classList.remove('on-fire');
                     }
                 } else if (wasAlreadyRecord && !isRecord) {
-                    // C'était déjà un record, on garde le trophée
-                    statElement.classList.add('newrecord');
-                    if (statType === 'TD') {
-                        statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span> 🏆';
-                    } else if (statType === 'DD') {
-                        statElement.innerHTML = '1 🏆';
+                    // Pour TOTAL, on peut perdre le record si on repasse sous le seuil
+                    if (statType === 'Total') {
+                        const recordValue = recordsData && recordsData['TOTAL'] ? recordsData['TOTAL'] : 999999;
+                        if (parseFloat(currentValue) <= recordValue) {
+                            // On est repassé sous le record, on retire tout
+                            statElement.classList.remove('newrecord');
+                            recordsBroken.delete(recordId);
+                            statElement.textContent = currentValue;
+                        } else {
+                            // On est toujours au-dessus du record
+                            statElement.classList.add('newrecord');
+                            statElement.textContent = currentValue + ' 🏆';
+                        }
                     } else {
-                        statElement.textContent = currentValue + ' 🏆';
+                        // Pour les autres stats, on garde le trophée
+                        statElement.classList.add('newrecord');
+                        if (statType === 'TD') {
+                            statElement.innerHTML = '1 <span style="display: inline-block; animation: starSpin 2s linear infinite;">⭐</span> 🏆';
+                        } else if (statType === 'DD') {
+                            statElement.innerHTML = '1 🏆';
+                        } else {
+                            statElement.textContent = currentValue + ' 🏆';
+                        }
                     }
                 }
                 
