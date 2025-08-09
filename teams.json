@@ -144,9 +144,9 @@
       "name": "Lebrown Rain-Fuel-Mint",
       "shortName": "Mint",
       "logo": "lebrown-rain-fuel-mint-logo.png",
-      "primaryColor": "#558d5a",
-      "secondaryColor": "#3a96a3",
-      "tertiaryColor": "#3a96a3",
+      "primaryColor": "#0A3938",
+      "secondaryColor": "#338f97",
+      "tertiaryColor": "#338f97",
       "font": "Montserrat",
       "players": ["Fajitas33", "ElBoully", "lepil", "listou", "Wayk00"]
     },
