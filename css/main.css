@@ -101,12 +101,12 @@ body {
     height: 80px;
     min-height: 80px;
     overflow: hidden;
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 /* Stats Table: Fill remaining space */
 .section:nth-child(3) {
-    height: calc(60vh - 90px);
+    height: calc(60vh - 100px);
     overflow-y: auto;
     margin-bottom: 0;
     flex: 1;
