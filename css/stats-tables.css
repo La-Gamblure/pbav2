@@ -121,11 +121,22 @@
     /* La couleur de bordure est appliquée dynamiquement par JavaScript */
   }
   
-  /* ligne d'en‑tête (Stats / Players / PTS …) */
+   /* ligne d'en‑tête (Stats / Players / PTS …) */
   .stats-row td {
-    background: #283e3a;
+    background: #1E1E2D;
     color: #64ffda;
     font-weight:600;
+  }
+  
+  /* Style pour la nouvelle ligne d'en-tête */
+  .header-row th {
+    background: #1E1E2D;
+    color: #64ffda;
+    font-size: 28px;
+    font-weight: 400;
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+    border: none;
   }
   
   /* Suppression de la classe darker */
