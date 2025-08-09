@@ -6,9 +6,9 @@
     display: flex;
     flex-direction: column;
     justify-content: center;  /* Centre verticalement */
-    align-items: center;      /* Centre horizontalement */
+    align-items: stretch;     /* Étire les enfants sur toute la largeur */
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0 1rem;          /* Padding horizontal seulement */
     box-sizing: border-box;
 }
 
@@ -21,23 +21,24 @@
     justify-content: center;
     background-color: #1a1a1a;
     color: #fff;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 2rem;
     border-radius: 4px;
     font-size: 1.9rem;
     font-weight: 600;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     opacity: 1;
-    width: fit-content;
-    max-width: 90%;
+    width: 100%;
+    text-align: center;
 }
+
 .generated-comment.shoot-success {
-    border-left: 4px solid #00ff00;  /* Vert pur plus brillant */
+    border-left: 6px solid #00ff00;
     background: linear-gradient(90deg, rgba(0,255,0,0.15), rgba(0,255,0,0.25));
     animation: successGlow 0.3s ease-in-out infinite alternate;
 }
 
 .generated-comment.shoot-failure {
-    border-left: 4px solid #ff0000;  /* Rouge pur plus vif */
+    border-left: 6px solid #ff0000;
     background: linear-gradient(90deg, rgba(255,0,0,0.15), rgba(255,0,0,0.25));
     animation: failureGlow 0.3s ease-in-out infinite alternate;
 }
