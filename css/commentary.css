@@ -4,9 +4,11 @@
    .commentary-box {
     height: 100%;
     display: flex;
-    flex-direction: column;   /* une ligne <p> sous l'autre */
-    gap: 1rem;                /* espace entre les commentaires */
-    padding: 1rem;
+    flex-direction: column;
+    justify-content: center;  /* Centre verticalement */
+    align-items: center;      /* Centre horizontalement */
+    gap: 0.5rem;
+    padding: 0.5rem;
     box-sizing: border-box;
 }
 
@@ -19,12 +21,14 @@
     justify-content: center;
     background-color: #1a1a1a;
     color: #fff;
-    padding: 1rem;
+    padding: 0.5rem 1rem;
     border-radius: 4px;
     font-size: 1.9rem;
     font-weight: 600;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     opacity: 1;
+    width: fit-content;
+    max-width: 90%;
 }
 .generated-comment.shoot-success {
     border-left: 4px solid #00ff00;  /* Vert pur plus brillant */
