@@ -121,7 +121,7 @@
     /* La couleur de bordure est appliquée dynamiquement par JavaScript */
   }
   
-   /* ligne d'en‑tête (Stats / Players / PTS …) */
+  /* ligne d'en‑tête (Stats / Players / PTS …) */
   .stats-row td {
     background: #1E1E2D;
     color: #64ffda;
@@ -134,9 +134,10 @@
     color: #64ffda;
     font-size: 28px;
     font-weight: 400;
-    padding: 0.4rem 0.5rem;
+    padding: 0.1rem 0.3rem;
     text-align: center;
     border: none;
+    line-height: 1;
   }
   
   /* Suppression de la classe darker */
