@@ -85,6 +85,7 @@ body {
     overflow: hidden;
     height: 90vh; /* Remaining 90% of viewport height */
     width: 100%; /* Correction: utiliser 100% au lieu de 100vh */
+    gap: 0;
 }
 
 /* Scoreboard: 3/10 of viewport height */
@@ -95,19 +96,20 @@ body {
     margin-bottom: 10px;
 }
 
-/* Commentary: 1/10 of viewport height */
+/* Commentary: Fixed height */
 .section:nth-child(2) {
-    height: 10vh;
-    min-height: 60px;
+    height: 80px;
+    min-height: 80px;
     overflow: hidden;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
-/* Stats Table: 5/10 of viewport height */
+/* Stats Table: Fill remaining space */
 .section:nth-child(3) {
-    height: 50vh;
+    height: calc(60vh - 90px);
     overflow-y: auto;
     margin-bottom: 0;
+    flex: 1;
 }
 
 /* Make sure child elements take full height */
