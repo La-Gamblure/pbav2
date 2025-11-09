@@ -151,6 +151,16 @@
       "players": ["Simoul", "backzylul", "Luc813", "Yahiko", "Manu Ginobili II"]
     },
     {
+      "name": "Afue-Rabbits",
+      "shortName": "Mint",
+      "logo": "afue-rabbits-logo.png",
+      "primaryColor": "#e0e8ed",
+      "secondaryColor": "#11689f",
+      "tertiaryColor": "#11689f",
+      "font": "Montserrat",
+      "players": ["AFR1", "AFR2", "KingFire", "Sese0750", "Wayk00"]
+    },
+    {
       "name": "Strip Gamblers",
       "shortName": "Gamblers",
       "logo": "strip-gamblers-logo.png",
