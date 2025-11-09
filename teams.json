@@ -161,6 +161,16 @@
       "players": ["AFR1", "AFR2", "KingFire", "Sese0750", "Wayk00"]
     },
     {
+      "name": "Black Heptapus",
+      "shortName": "Mint",
+      "logo": "black-heptapus-logo.png",
+      "primaryColor": "#121a21",
+      "secondaryColor": "#1083b5",
+      "tertiaryColor": "#1083b5",
+      "font": "Montserrat",
+      "players": ["BHT1", "BHT2", "KingFire", "Sese0750", "Wayk00"]
+    },
+    {
       "name": "Strip Gamblers",
       "shortName": "Gamblers",
       "logo": "strip-gamblers-logo.png",
