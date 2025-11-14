@@ -8,7 +8,7 @@
       "secondaryColor": "#FF6600",
       "tertiaryColor": "#006633",
       "font": "Staatliches",
-      "players": ["Dside", "Thork", "lepil", "brice4307", "Sorarecaillard"]
+      "players": ["Théguils", "Arteka56", "STR8KR4ZY", "Teiqola", "Gorbong"]
     },
     {
       "name": "Sigma 68ers",
@@ -18,7 +18,7 @@
       "secondaryColor": "#FFFFFF",
       "tertiaryColor": "#0F2B5B",
       "font": "Archivo Black",
-      "players": ["Da Pounce", "loulm", "Lordsun", "IamNickColt", "Tng10"]
+      "players": ["backzylul", "JLGO", "Sdely", "p0uet21", "BleeZreK"]
     },
     {
       "name": "Rap-Thors",
@@ -28,7 +28,7 @@
       "secondaryColor": "#C31D31",
       "tertiaryColor": "#C31D31",
       "font": "Cinzel",
-      "players": ["KiinKiin", "Djetro", "Tibo", "Ellie", "FurySin"]
+      "players": ["KiinKiin", "Elgaborracho", "Thork", "Julbout", "Zizou Schumi"]
     },
     {
       "name": "Moon Dragons",
@@ -38,7 +38,7 @@
       "secondaryColor": "#153148",
       "tertiaryColor": "#153148",
       "font": "Cinzel",
-      "players": ["MaximeS28", "Schuriken", "Cosmo Swan", "Fab", "Scredss"]
+      "players": ["PetiteJuju", "Locksyn", "Sese0750", "zarKOs", "Wayk00"]
     },
     {
       "name": "Tuah Hawks",
@@ -48,7 +48,7 @@
       "secondaryColor": "#FFFFFF",
       "tertiaryColor": "#1C6281",
       "font": "Oswald",
-      "players": ["Sparfou", "Seyars27", "Selim1050", "kaiser06", "Dilon Bricks"]
+      "players": ["MaximeS28", "Lordsun", "Cosmo Swan", "Bueno2So", "Sorarecaillard"]
     },
     {
       "name": "Bear Hodlers",
@@ -58,7 +58,7 @@
       "secondaryColor": "#D9CEB6",
       "tertiaryColor": "#E5A83C",
       "font": "Teko",
-      "players": ["Fajitas33", "BuzzerBeater", "MatthVr", "Julie", "Elodays"]
+      "players": ["ShaadowStorme", "loulm", "lepil", "IamNickColt", "Notagame Patrice"]
     },
     {
       "name": "Mosquit-Hornets",
@@ -68,7 +68,7 @@
       "secondaryColor": "#124762",
       "tertiaryColor": "#124762",
       "font": "Saira Condensed",
-      "players": ["Tonton", "ElBoully", "Rzh", "listou", "Céleste"]
+      "players": ["Sphynx787", "matgt", "pap42", "Julie", "RogerPalaref"]
     },
     {
       "name": "Ocean Demons",
@@ -78,7 +78,7 @@
       "secondaryColor": "#F5EA72",
       "tertiaryColor": "#F5EA72",
       "font": "Creepster",
-      "players": ["PetiteJuju", "JLGO", "CGP", "Teiqola", "TankRomagnoli"]
+      "players": ["Sparfou", "Djetro", "Lilou", "Ellie", "Dilon Bricks"]
     },
     {
       "name": "Hudson Sharks",
@@ -88,7 +88,7 @@
       "secondaryColor": "#d4600b",
       "tertiaryColor": "#F4792B",
       "font": "Anton",
-      "players": ["ShaadowStorme", "Michel pinto", "Locksyn", "Richard Aldana", "BleeZreK"]
+      "players": ["Crabou", "JeanTaur", "Luc813", "Louise", "nicolafuriaroja"]
     },
     {
       "name": "FOMO Princes",
@@ -98,7 +98,7 @@
       "secondaryColor": "#D7C5A0",
       "tertiaryColor": "#202E49",
       "font": "Cinzel",
-      "players": ["Coconuts", "Crabou", "wazoolevrai", "p0uet21", "Notagame Patrice"]
+      "players": ["Coconuts", "ElBoully", "wilfriedrp", "Fab", "brice4307"]
     },
     {
       "name": "Lebrown Rain-Fuel-Mint",
@@ -108,7 +108,7 @@
       "secondaryColor": "#338f97",
       "tertiaryColor": "#338f97",
       "font": "Montserrat",
-      "players": ["as2pike", "Arteka56", "KingFire", "Sese0750", "Wayk00"]
+      "players": ["SangoRiley", "BuzzerBeater", "KingFire", "Richard Aldana", "Toteau"]
     },
     {
       "name": "Oko-Rockets",
@@ -118,7 +118,7 @@
       "secondaryColor": "#F8ECDC",
       "tertiaryColor": "#121D24",
       "font": "Orbitron",
-      "players": ["Théguils", "Batigoal", "Hizzi", "zarKOs", "Bueno2So"]
+      "players": ["Fajitas33", "Seyars27", "Selim1050", "listou", "BTankRomagnoli"]
     },
     {
       "name": "Can-Heat-Balls",
@@ -128,7 +128,7 @@
       "secondaryColor": "#F2AA2D",
       "tertiaryColor": "#4D0E0C",
       "font": "Bangers",
-      "players": ["Sphynx787", "matgt", "Sdely", "Paris93260", "RogerPalaref"]
+      "players": ["Tonton", "Michel pinto", "Pic", "M4RCO", "Céleste"]
     },
     {
       "name": "Gaus-Spurs",
@@ -138,7 +138,7 @@
       "secondaryColor": "#181816",
       "tertiaryColor": "#181816",
       "font": "Bebas Neue",
-      "players": ["JeanTaur", "SangoRiley", "wilfriedrp", "Pic", "Julbout"]
+      "players": ["Simoul", "Batigoal", "Paris93260", "Yahiko", "Bilz363"]
     },
     {
       "name": "Bos-Storm-Troopers",
@@ -148,7 +148,7 @@
       "secondaryColor": "#D69140",
       "tertiaryColor": "#D69140",
       "font": "Rajdhani",
-      "players": ["Simoul", "backzylul", "Luc813", "Yahiko", "Manu Ginobili II"]
+      "players": ["as2pike", "Schuriken", "Hizzi", "kaiser06", "Elodays"]
     },
     {
       "name": "Afue-Rabbits",
@@ -158,7 +158,7 @@
       "secondaryColor": "#11689f",
       "tertiaryColor": "#11689f",
       "font": "Montserrat",
-      "players": ["AFR1", "AFR2", "KingFire", "Sese0750", "Wayk00"]
+      "players": ["Da Pounce", "wazoolevrai", "CGP", "Scredss", "FurySin"]
     },
     {
       "name": "Black Heptapus",
@@ -168,7 +168,7 @@
       "secondaryColor": "#1083b5",
       "tertiaryColor": "#1083b5",
       "font": "Montserrat",
-      "players": ["BHT1", "BHT2", "KingFire", "Sese0750", "Wayk00"]
+      "players": ["Dside", "MatthVr", "Rzh", "Manu Ginobili II", "Tng10"]
     },
     {
       "name": "Strip Gamblers",
