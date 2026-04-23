@@ -152,13 +152,12 @@ async function transformExcel(input, options = {}) {
     }
     
     // Définir l'ordre des stats pour chaque joueur
+    // On inclut FG% juste après 3-Points
     const statTypes = [
-      'Points', '3-Points', 'Rebounds', 'Assist', 'Blocks', 'Steals', 'TurnOvers', 'DD', 'TD', 'Total'
+      'Points', '3-Points', 'FG%', 'Rebounds', 'Assist', 'Blocks', 'Steals', 'TurnOvers', 'DD', 'TD', 'Total'
     ];
     
-    // Les colonnes FG% sont très loin (DI et après), on les traite séparément
-    // Pour l'instant, on ne les ajoute PAS dans statTypes car elles sont trop éloignées
-    console.log('Note: Les colonnes FG% (DI-DR) seront traitées séparément si présentes');
+    console.log('Nouvel ordre des stats avec FG% après 3-Points');
     
     // Créer la liste des joueurs
     const playerIds = [];
@@ -166,7 +165,24 @@ async function transformExcel(input, options = {}) {
       for (let i = 1; i <= 5; i++) playerIds.push(`${t}${i}`);
     }
 
-    // Construction de la nouvelle ligne d'en-têtes
+    // Récupérer d'abord les données FG% depuis leurs colonnes actuelles (DI à DR)
+    const fgStartColumn = 113; // Colonne DI
+    const fgData = {};
+    
+    // Sauvegarder les données FG% pour chaque joueur avant de réorganiser
+    for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+      const row = worksheet.getRow(rowNum);
+      playerIds.forEach((pid, index) => {
+        const fgColumnIndex = fgStartColumn + index;
+        const fgValue = row.getCell(fgColumnIndex).value;
+        if (!fgData[rowNum]) fgData[rowNum] = {};
+        fgData[rowNum][pid] = fgValue;
+      });
+    }
+    
+    console.log(`Données FG% sauvegardées pour ${Object.keys(fgData).length} lignes`);
+
+    // Construction de la nouvelle ligne d'en-têtes avec FG% intégré
     const headers = [...baseHeaders];
     for (const pid of playerIds) {
       for (const stat of statTypes) {
@@ -176,29 +192,54 @@ async function transformExcel(input, options = {}) {
     
     console.log('Nouvel ordre des colonnes:', headers.slice(0, 20), '...');
 
-    // Remplacer l'en-tête avec le nouveau mapping
-    const row1 = worksheet.getRow(1);
-    headers.forEach((h, idx) => {
-      row1.getCell(idx + 1).value = h;
-    });
-    
-    // Mapping spécial pour les colonnes FG% (DI à DR)
-    // DI = colonne 113 (index 112)
-    const fgStartColumn = 113; // Colonne DI
-    let fgIndex = 0;
-    
-    // Mapper les colonnes FG% pour chaque joueur
-    for (const pid of playerIds) {
-      const columnIndex = fgStartColumn + fgIndex;
-      const cell = row1.getCell(columnIndex);
-      cell.value = `${pid}-FG%`;
-      console.log(`Mapping FG%: ${pid}-FG% → colonne ${columnIndex} (${String.fromCharCode(64 + Math.floor((columnIndex - 1) / 26)) + String.fromCharCode(65 + ((columnIndex - 1) % 26))})`);
-      fgIndex++;
+    // Réorganiser toutes les données pour correspondre au nouvel ordre
+    for (let rowNum = 1; rowNum <= worksheet.rowCount; rowNum++) {
+      const row = worksheet.getRow(rowNum);
+      const rowData = {};
+      
+      if (rowNum === 1) {
+        // Pour la ligne d'en-tête, on met simplement les nouveaux noms
+        headers.forEach((h, idx) => {
+          row.getCell(idx + 1).value = h;
+        });
+      } else {
+        // Pour les données, on doit réorganiser
+        // D'abord sauvegarder toutes les valeurs actuelles
+        for (let i = 1; i <= row.cellCount; i++) {
+          const cell = row.getCell(i);
+          rowData[i] = cell.value;
+        }
+        
+        // Puis les réaffecter dans le bon ordre
+        let newColIndex = 1;
+        
+        // D'abord les colonnes de base
+        for (let i = 0; i < baseHeaders.length; i++) {
+          row.getCell(newColIndex).value = rowData[i + 1];
+          newColIndex++;
+        }
+        
+        // Puis les stats des joueurs dans le nouvel ordre
+        for (const pid of playerIds) {
+          const playerStartCol = baseHeaders.length + playerIds.indexOf(pid) * 10 + 1;
+          
+          // Points
+          row.getCell(newColIndex++).value = rowData[playerStartCol];
+          // 3-Points
+          row.getCell(newColIndex++).value = rowData[playerStartCol + 1];
+          // FG% (depuis les données sauvegardées)
+          row.getCell(newColIndex++).value = fgData[rowNum] ? fgData[rowNum][pid] : null;
+          // Rebounds à Total
+          for (let i = 2; i < 10; i++) {
+            row.getCell(newColIndex++).value = rowData[playerStartCol + i];
+          }
+        }
+      }
+      
+      row.commit();
     }
     
-    row1.commit();
-    
-    console.log('Total de colonnes mappées:', headers.length + ' + 10 colonnes FG%');
+    console.log('Réorganisation terminée. Total de colonnes:', headers.length);
 
     // Stocker les noms d'équipes dans le workbook pour les récupérer plus tard
     workbook.teamNames = teamNames;
@@ -241,9 +282,9 @@ function workbookToJson(workbook) {
     }
 
     // Extraire en-têtes SANS normalisation (on garde la casse et les tirets)
-    // Forcer la lecture jusqu'à la colonne DR (122) pour inclure les FG%
+    // Avec la réorganisation, FG% est maintenant intégré dans les colonnes des joueurs
     const headers = [];
-    const maxColumns = 122; // Jusqu'à la colonne DR
+    const maxColumns = 120; // Ajusté car FG% est maintenant intégré
     
     for (let col = 1; col <= maxColumns; col++) {
       const cell = worksheet.getRow(1).getCell(col);
@@ -253,7 +294,7 @@ function workbookToJson(workbook) {
     }
     
     console.log(`Headers extraits (${headers.length} colonnes)`);
-    console.log('Colonnes FG%:', headers.slice(112, 123)); // DI à DR
+    console.log('Vérification FG% intégré:', headers.filter((h, idx) => h && h.includes('FG%')).slice(0, 5));
 
     const data = [];
     // Parcourir lignes à partir de la 2

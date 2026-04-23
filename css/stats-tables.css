@@ -26,6 +26,38 @@
     box-shadow: 0 8px 30px rgba(0,0,0,.4);
     color: #fff;
   }
+
+  /* === Header des coefficients === */
+  .coefficients-row {
+    background-color: #283e3a;
+    border-bottom: 2px solid #64ffda;
+  }
+
+  .coefficients-row td {
+    padding: .6rem .75rem;
+    text-align: center;
+    border: none;
+    font-size: 20px;
+    background-color: #283e3a;
+    color: #64ffda;
+  }
+
+  .coeff-label {
+    font-weight: bold;
+    color: #64ffda;
+    background-color: #283e3a;
+    font-size: 22px;
+    border: 2px solid #64ffda;
+    border-radius: 8px;
+  }
+
+  .coeff-item {
+    color: #64ffda;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  /* Supprimer les couleurs individuelles - tous en cyan #64ffda */
   
   /* === table === */
   #stats-table {
@@ -608,7 +640,10 @@
 
 /* === Styles pour les cellules FG% === */
 .fg-percent {
-    font-weight: 700;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 0.85em;
+    opacity: 0.9;
     transition: all 0.3s ease;
 }
 

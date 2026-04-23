@@ -475,18 +475,19 @@ function updateTeamStats(row, team) {
     
     // Types de statistiques dans l'ordre où elles apparaissent dans le tableau HTML
     // IMPORTANT: Cet ordre DOIT correspondre EXACTEMENT à l'ordre des colonnes dans index.html
+    // Avec la réorganisation Excel, FG% est maintenant juste après 3-Points
     const statTypes = [
         'Points',      // Colonne 3 (après Team Label et Player Name)
         '3-Points',    // Colonne 4
-        'Rebounds',    // Colonne 5
-        'Assist',      // Colonne 6
-        'Blocks',      // Colonne 7
-        'Steals',      // Colonne 8
-        'TurnOvers',   // Colonne 9
-        'DD',          // Colonne 10
-        'TD',          // Colonne 11
-        'Total'        // Colonne 12
-        // FG% est traité séparément car dans une colonne très éloignée (DI)
+        'FG%',         // Colonne 5 (maintenant intégré ici)
+        'Rebounds',    // Colonne 6
+        'Assist',      // Colonne 7
+        'Blocks',      // Colonne 8
+        'Steals',      // Colonne 9
+        'TurnOvers',   // Colonne 10
+        'DD',          // Colonne 11
+        'TD',          // Colonne 12
+        'Total'        // Colonne 13
     ];
     
     // Stats FG% à traiter séparément
@@ -516,10 +517,8 @@ function updateTeamStats(row, team) {
                 continue; // Élément non trouvé, passer au suivant
             }
             
-            // FG% est traité séparément car dans une colonne très éloignée
-            if (statType === 'FG%') {
-                continue; // Skip FG% dans cette boucle
-            }
+            // FG% est maintenant traité comme les autres stats
+            // (suppression du skip car FG% est maintenant intégré)
             
             // Mettre à jour la cellule avec la valeur du JSON si elle existe
             if (row[idStat] !== undefined) {
@@ -654,46 +653,10 @@ if (!isNaN(currentValue)) {
     
     console.log(`Statistiques mises à jour pour l'équipe ${teamPrefix}`);
     
-    // Traiter FG% séparément (colonne éloignée dans Excel)
-    updateFGStatsForTeam(row, team);
+    // FG% est maintenant traité dans la boucle principale, plus besoin de updateFGStatsForTeam
     
     // Appliquer les codes couleur pour les stats
     applyStatColorCoding();
-}
-
-/**
- * Met à jour les stats FG% qui sont dans des colonnes éloignées (DI et après)
- */
-function updateFGStatsForTeam(row, team) {
-    const teamPrefix = team.toUpperCase();
-    
-    for (let playerNum = 1; playerNum <= 5; playerNum++) {
-        const playerId = `${teamPrefix}${playerNum}`;
-        const fgElement = document.getElementById(`${playerId}-FG%`);
-        
-        if (!fgElement) continue;
-        
-        const fgPercent = row[`${playerId}-FG%`];
-        
-        // Debug log pour la première ligne
-        if (currentRowIndex === 0 && playerNum === 1) {
-            console.log(`Recherche FG% pour ${playerId}:`, fgPercent);
-            console.log('Clés disponibles contenant FG:', Object.keys(row).filter(k => k.includes('FG')));
-        }
-        
-        if (fgPercent !== undefined && fgPercent !== null && fgPercent !== '') {
-            let percentValue = parseFloat(fgPercent);
-            
-            // Si la valeur est entre 0 et 1, c'est un ratio qu'il faut convertir en pourcentage
-            if (percentValue >= 0 && percentValue <= 1) {
-                percentValue = percentValue * 100;
-            }
-            
-            fgElement.textContent = !isNaN(percentValue) ? `${percentValue.toFixed(1)}%` : '-';
-        } else {
-            fgElement.textContent = '-';
-        }
-    }
 }
 
 
